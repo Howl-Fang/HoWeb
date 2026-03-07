@@ -9,7 +9,7 @@ const translations = {
     },
     hero: {
       greeting: "Hello, I'm",
-      name: "Your Name",
+      name: "Howl Fang",
       tagline: "Designer & Developer crafting thoughtful digital experiences.",
     },
     about: {
@@ -26,7 +26,7 @@ const translations = {
       title: "Get in Touch",
       description: "Feel free to reach out for collaborations or just a friendly hello.",
       email: "Email",
-      placeholder: "hello@example.com",
+      placeholder: "Howl.Fang@outlook.com",
     },
     footer: {
       rights: "All rights reserved.",
@@ -40,7 +40,7 @@ const translations = {
     },
     hero: {
       greeting: "你好，我是",
-      name: "你的名字",
+      name: "汤圆圆",
       tagline: "设计师与开发者，专注于打造精心设计的数字体验。",
     },
     about: {
@@ -57,7 +57,7 @@ const translations = {
       title: "联系我",
       description: "欢迎就合作或任何事情与我联系。",
       email: "邮箱",
-      placeholder: "hello@example.com",
+      placeholder: "Howl.Fang@outlook.com",
     },
     footer: {
       rights: "保留所有权利。",

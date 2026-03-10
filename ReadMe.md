@@ -1,6 +1,8 @@
 # Howl Fang's Personal Webpage
 
-## Alias Domain: Howl-Fang.win
+## Deployment on cloudlfare Pages
+
+## Alias Domain: test.Howl-Fang.win
 
 ### File Sturcture:
 archive:

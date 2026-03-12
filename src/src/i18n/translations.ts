@@ -10,12 +10,12 @@ const translations = {
     hero: {
       greeting: "Hello, I'm",
       name: "Howl Fang",
-      tagline: "Designer & Developer crafting thoughtful digital experiences.",
+      tagline: "Soul Traveler",
     },
     about: {
       title: "About",
-      p1: "I believe in the power of simplicity. With a background in design and engineering, I build things that feel intuitive and look beautiful.",
-      p2: "Currently exploring the intersection of creativity and technology — always learning, always making.",
+      p1: "My life is in a continuous \"beta version.\"",
+      p2: "I define no boundaries.",
     },
     projects: {
       title: "Projects",
@@ -41,12 +41,12 @@ const translations = {
     hero: {
       greeting: "你好，我是",
       name: "汤圆圆",
-      tagline: "设计师与开发者，专注于打造精心设计的数字体验。",
+      tagline: "灵魂行者",
     },
     about: {
       title: "关于我",
-      p1: "我相信简约的力量。凭借设计与工程的双重背景，我构建直觉且美观的事物。",
-      p2: "目前正在探索创意与技术的交汇处——不断学习，不断创造。",
+      p1: "开发生活的新方向",
+      p2: "不定义边界",
     },
     projects: {
       title: "项目",

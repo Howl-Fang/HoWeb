@@ -37,6 +37,21 @@ const ContactSection = ({ t }: { t: Translations }) => {
           <span className="border-b border-border group-hover:border-foreground transition-colors duration-300">
             {t.contact.placeholder}
           </span>
+        <br/>
+	</motion.a>
+	<motion.a
+          href="mailto:me@Howl-Fang.win"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          whileHover={{ x: 4 }}
+          className="inline-flex items-center gap-3 text-foreground font-body group"
+        >
+          <Mail className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors duration-300" />
+          <span className="border-b border-border group-hover:border-foreground transition-colors duration-300">
+            {t.contact.placeholder2}
+          </span>
         </motion.a>
       </div>
     </section>

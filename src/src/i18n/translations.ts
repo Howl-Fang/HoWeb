@@ -24,9 +24,10 @@ const translations = {
     },
     contact: {
       title: "Get in Touch",
-      description: "Feel free to reach out for collaborations or just a friendly hello.",
+      description: "Be free to reach me. Query, collaboration or just chat are welcomed",
       email: "Email",
       placeholder: "Howl.Fang@outlook.com",
+      placeholder2: "me@Howl-Fang.win",
     },
     footer: {
       rights: "All rights reserved.",
@@ -55,9 +56,10 @@ const translations = {
     },
     contact: {
       title: "联系我",
-      description: "欢迎就合作或任何事情与我联系。",
+      description: "欢迎来访，合作、咨询亦或闲聊",
       email: "邮箱",
       placeholder: "Howl.Fang@outlook.com",
+      placeholder2: "me@Howl-Fang.win",
     },
     footer: {
       rights: "保留所有权利。",

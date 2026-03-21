@@ -37,8 +37,8 @@ const ContactSection = ({ t }: { t: Translations }) => {
           <span className="border-b border-border group-hover:border-foreground transition-colors duration-300">
             {t.contact.placeholder}
           </span>
-        <br/>
 	</motion.a>
+  <br/>
 	<motion.a
           href="mailto:me@Howl-Fang.win"
           initial={{ opacity: 0, y: 20 }}

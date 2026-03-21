@@ -8,18 +8,19 @@ const translations = {
       contact: "Contact",
     },
     hero: {
-      greeting: "Hello, I'm",
+      greeting: "Hello, Here's",
       name: "Howl Fang",
       tagline: "Soul Traveler",
     },
     about: {
       title: "About",
-      p1: "My life is in a continuous \"beta version.\"",
-      p2: "I define no boundaries.",
+      p1: "We let our little boat drift where it would, over the thousand acres of watery waste.",
+      // p1: "My life is in a continuous \"beta version.\"",
+      p2: "My life is in a continuous \"beta version.\"",
     },
     projects: {
       title: "Projects",
-      comingSoon: "New works coming soon.",
+      comingSoon: "Coming soon.",
       description: "This space is reserved for upcoming projects. Stay tuned.",
     },
     contact: {
@@ -46,12 +47,12 @@ const translations = {
     },
     about: {
       title: "关于我",
-      p1: "开发生活的新方向",
-      p2: "不定义边界",
+      p1: "纵一苇之所如，凌万顷之茫然。",
+      p2: "开发生活的新方向",
     },
     projects: {
       title: "项目",
-      comingSoon: "新作品即将推出。",
+      comingSoon: "快来了",
       description: "此空间为即将到来的项目预留，敬请期待。",
     },
     contact: {

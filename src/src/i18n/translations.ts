@@ -2,6 +2,10 @@ export type Locale = "en" | "zh";
 
 const translations = {
   en: {
+    head: {
+      title: "Howl Fang",
+      description: "Personal website of Howl Fang",
+    },
     nav: {
       about: "About",
       projects: "Projects",
@@ -35,6 +39,10 @@ const translations = {
     },
   },
   zh: {
+    head: {
+      title: "汤圆圆",
+      description: "汤圆圆的个人网站",
+    },
     nav: {
       about: "关于",
       projects: "项目",

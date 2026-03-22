@@ -23,6 +23,7 @@ const NavBar = ({ t, locale, toggleLocale }: NavBarProps) => {
       <a href="#" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="font-display text-lg tracking-wide text-foreground">
         {t.hero.name}
       </a>
+      <br/>
       <div className="flex items-center gap-6 md:gap-8 text-sm font-body">
         <a href="#about" onClick={(e) => scrollTo(e, "about")} className="text-muted-foreground hover:text-foreground transition-colors duration-300">
           {t.nav.about}

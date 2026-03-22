@@ -63,7 +63,7 @@ const translations = {
       placeholder2: "me@Howl-Fang.win",
     },
     footer: {
-      rights: "保留所有权利。",
+      rights: "保留所有权利",
     },
   },
 };

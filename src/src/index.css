@@ -1,5 +1,5 @@
 /* Import local fonts (no CDN dependency) */
-@import url("lib/fonts.css");
+@import './lib/fonts.css';
 
 @tailwind base;
 @tailwind components;

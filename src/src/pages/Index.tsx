@@ -49,7 +49,7 @@ function Index() {
       window.addEventListener("load", handlePageLoad);
     }
 
-    // 绝对超时保护：无论如何，3 秒后一定要隐藏（防止卡顿）
+    // 绝对超时保护：无论如何，超时后一定要隐藏（防止卡顿）
     const maxTimeoutId = setTimeout(() => setLoading(false), MAX_LOADING_TIME);
 
     return () => {

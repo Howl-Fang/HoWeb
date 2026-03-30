@@ -47,8 +47,10 @@
     --sidebar-ring: 30 8% 40%;
 
     /* Custom tokens */
-    --font-display: 'Instrument Serif', 'Noto Serif SC', Georgia, serif;
-    --font-body: 'Source Sans 3', 'Noto Sans SC', system-ui, sans-serif;
+    --font-display: 'GenYoMin M', Georgia, serif;
+    --font-body: 'GenYoMin M', system-ui, sans-serif;
+    /* --font-display: 'Instrument Serif', 'Noto Serif SC', Georgia, serif;
+    --font-body: 'Source Sans 3', 'Noto Sans SC', system-ui, sans-serif; */
     --subtle-shadow: 0 1px 3px hsl(30 10% 15% / 0.04);
     --hover-shadow: 0 4px 12px hsl(30 10% 15% / 0.06);
   }

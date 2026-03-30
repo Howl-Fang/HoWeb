@@ -1,10 +1,19 @@
 /* @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Noto+Sans+SC:wght@300;400;500&family=Noto+Serif+SC:wght@400;600&family=Source+Sans+3:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap'); */
 
 @font-face {
+  font-family: 'Song';
+  font-style: normal;
+  font-display: swap;
+  src: url('/fonts/AppleSong-Regular.woff2') format('woff2');
+  /* src: url('/fonts/GenYoMinTW-Medium.woff2') format('woff2'); */
+}
+
+@font-face {
   font-family: 'GenYoMin M';
   font-style: normal;
   font-display: swap;
-  src: url('/fonts/GenYoMinTW-Medium.woff2') format('woff2');
+  src: url('/fonts/GenYoMin-Regular.woff2') format('woff2');
+  /* src: url('/fonts/GenYoMinTW-Medium.woff2') format('woff2'); */
 }
 
 @font-face {
@@ -12,6 +21,13 @@
   font-style: normal;
   font-display: swap;
   src: url('/fonts/Baskerville-Regular.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Poly Regular';
+  font-style: normal;
+  font-display: swap;
+  src: url('/fonts/Poly-Regular.woff2') format('woff2');
 }
 
 /* Instrument Serif - italic */

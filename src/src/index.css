@@ -47,8 +47,8 @@
     --sidebar-ring: 30 8% 40%;
 
     /* Custom tokens */
-    --font-display: 'GenYoMin M', Georgia, serif;
-    --font-body: 'GenYoMin M', system-ui, sans-serif;
+    --font-display: 'Poly Regular', 'Baskerville', 'Song', 'GenYoMin M', Georgia, serif;
+    --font-body: 'Poly Regular', 'Baskerville', 'Song', 'GenYoMin M', system-ui, sans-serif;
     /* --font-display: 'Instrument Serif', 'Noto Serif SC', Georgia, serif;
     --font-body: 'Source Sans 3', 'Noto Sans SC', system-ui, sans-serif; */
     --subtle-shadow: 0 1px 3px hsl(30 10% 15% / 0.04);

@@ -82,7 +82,7 @@ function Index() {
         <NavBar t={t} locale={locale} toggleLocale={toggleLocale} />
         <HeroSection t={t} />
         <AboutSection t={t} />
-        <ProjectsSection t={t} />
+        <ProjectsSection t={t} locale={locale} />
         <ContactSection t={t} />
         <Footer t={t} />
       </div>

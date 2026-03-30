@@ -1,5 +1,5 @@
-/* @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Noto+Sans+SC:wght@300;400;500&family=Noto+Serif+SC:wght@400;600&family=Source+Sans+3:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap'); */
-@import url("lib/google.format.css");
+/* Import local fonts (no CDN dependency) */
+@import './lib/fonts.css';
 
 @tailwind base;
 @tailwind components;
@@ -47,8 +47,10 @@
     --sidebar-ring: 30 8% 40%;
 
     /* Custom tokens */
-    --font-display: 'Instrument Serif', 'Noto Serif SC', Georgia, serif;
-    --font-body: 'Source Sans 3', 'Noto Sans SC', system-ui, sans-serif;
+    --font-display: 'Poly Regular', 'Baskerville', 'Song', 'GenYoMin M', Georgia, serif;
+    --font-body: 'Poly Regular', 'Baskerville', 'Song', 'GenYoMin M', system-ui, sans-serif;
+    /* --font-display: 'Instrument Serif', 'Noto Serif SC', Georgia, serif;
+    --font-body: 'Source Sans 3', 'Noto Sans SC', system-ui, sans-serif; */
     --subtle-shadow: 0 1px 3px hsl(30 10% 15% / 0.04);
     --hover-shadow: 0 4px 12px hsl(30 10% 15% / 0.06);
   }

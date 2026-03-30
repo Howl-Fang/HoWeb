@@ -13,7 +13,6 @@
   font-style: normal;
   font-display: swap;
   src: url('/fonts/GenYoMin-Regular.woff2') format('woff2');
-  /* src: url('/fonts/GenYoMinTW-Medium.woff2') format('woff2'); */
 }
 
 @font-face {

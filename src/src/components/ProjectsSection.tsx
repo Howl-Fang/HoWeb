@@ -14,7 +14,7 @@ const ProjectsSection = ({ t, locale }: ProjectsSectionProps) => {
 
   return (
     <section id="projects" className="section-padding bg-card">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-3xl mx-auto">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}

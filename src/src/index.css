@@ -105,4 +105,24 @@
   .section-padding {
     @apply px-6 md:px-12 lg:px-24 py-16 md:py-24;
   }
+
+  .underline-hover {
+    position: relative;
+    display: inline-block;
+  }
+
+  .underline-hover::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: currentColor;
+    transition: width 0.3s ease;
+  }
+
+  .underline-hover:hover::after {
+    width: 100%;
+  }
 }

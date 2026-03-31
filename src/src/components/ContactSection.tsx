@@ -5,7 +5,7 @@ import type { Translations } from "@/i18n/translations";
 const ContactSection = ({ t }: { t: Translations }) => {
   return (
     <section id="contact" className="section-padding">
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-3xl mx-auto">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}

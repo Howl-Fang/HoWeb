@@ -1,11 +1,53 @@
 /* @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Noto+Sans+SC:wght@300;400;500&family=Noto+Serif+SC:wght@400;600&family=Source+Sans+3:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap'); */
 
+
+@font-face {
+  font-family: 'Merriweather';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 300 900;
+  src: url('/fonts/Merriweather-VariableFont_opsz,wdth,wght.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Noto Serif SC';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 200 900;
+  src: url('/fonts/NotoSerifSC-VariableFont_wght.woff2') format('woff2');
+}
+
+
+/* @font-face {
+  font-family: 'Poly Regular';
+  font-style: normal;
+  font-display: swap;
+  src: url('/fonts/Poly-Regular.woff2') format('woff2');
+} */
+
+/* @font-face {
+  font-family: 'Cormorant';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 300 700;
+  src: url('/fonts/Cormorant-VariableFont_wght.woff2') format('woff2');
+} */
+
+/* 
+@font-face {
+  font-family: 'Noto Serif SC Bold';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 900;
+  src: url('/fonts/NotoSerifSC-VariableFont_wght.woff2') format('woff2');
+} */
+
+/* 
 @font-face {
   font-family: 'Song';
   font-style: normal;
   font-display: swap;
   src: url('/fonts/AppleSong-Regular.woff2') format('woff2');
-  /* src: url('/fonts/GenYoMinTW-Medium.woff2') format('woff2'); */
 }
 
 @font-face {
@@ -20,14 +62,10 @@
   font-style: normal;
   font-display: swap;
   src: url('/fonts/Baskerville-Regular.woff2') format('woff2');
-}
+} */
 
-@font-face {
-  font-family: 'Poly Regular';
-  font-style: normal;
-  font-display: swap;
-  src: url('/fonts/Poly-Regular.woff2') format('woff2');
-}
+
+
 
 /* Instrument Serif - italic */
 /* @font-face {

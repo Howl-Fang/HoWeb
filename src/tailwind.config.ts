@@ -14,8 +14,10 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ["Instrument Serif", "Noto Serif SC", "Georgia", "serif"],
-        body: ["Source Sans 3", "Noto Sans SC", "system-ui", "sans-serif"],
+        display: ['var(--font-display)'],
+        // display: ["Instrument Serif", "Noto Serif SC", "Georgia", "serif"],
+        body: ['var(--font-body)'],
+        // body: ["Source Sans 3", "Noto Sans SC", "system-ui", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",

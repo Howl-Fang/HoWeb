@@ -1,5 +1,6 @@
 import { motion, type Variants, type Easing } from "framer-motion";
 import type { Translations } from "@/i18n/translations";
+import { useState, useEffect, useRef } from "react";
 
 const ease: Easing = "easeOut";
 
@@ -13,6 +14,34 @@ const fadeUp: Variants = {
 };
 
 const HeroSection = ({ t }: { t: Translations }) => {
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const nameRef = useRef<HTMLHeadingElement>(null);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (nameRef.current) {
+        const rect = nameRef.current.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        
+        // Calculate relative position from the text center
+        const deltaX = (e.clientX - centerX) / 10;
+        const deltaY = (e.clientY - centerY) / 10;
+        
+        setMousePosition({ x: deltaX, y: deltaY });
+      }
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
+
+  const textShadow = `
+    ${-mousePosition.x}px ${-mousePosition.y}px 10px rgba(0, 0, 0, 0.3),
+    ${-mousePosition.x * 2}px ${-mousePosition.y * 2}px 20px rgba(0, 0, 0, 0.2),
+    ${-mousePosition.x * 3}px ${-mousePosition.y * 3}px 30px rgba(0, 0, 0, 0.1)
+  `;
+
   return (
     <section className="min-h-screen flex flex-col justify-center section-padding pt-32">
       <div className="max-w-2xl">
@@ -26,11 +55,13 @@ const HeroSection = ({ t }: { t: Translations }) => {
           {t.hero.greeting}
         </motion.p>
         <motion.h1
+          ref={nameRef}
           custom={1}
           initial="hidden"
           animate="visible"
           variants={fadeUp}
           className="text-5xl md:text-7xl lg:text-8xl font-display text-foreground leading-tight mb-6"
+          style={{ textShadow }}
         >
           {t.hero.name}
         </motion.h1>

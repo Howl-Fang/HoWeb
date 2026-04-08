@@ -15,11 +15,18 @@ const fadeUp: Variants = {
 
 const HeroSection = ({ t }: { t: Translations }) => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isMobile, setIsMobile] = useState(false);
   const nameRef = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
+    // Detect if device is mobile
+    const checkMobile = () => {
+      setIsMobile(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
+    };
+    checkMobile();
+
     const handleMouseMove = (e: MouseEvent) => {
-      if (nameRef.current) {
+      if (nameRef.current && !isMobile) {
         const rect = nameRef.current.getBoundingClientRect();
         const centerX = rect.left + rect.width / 2;
         const centerY = rect.top + rect.height / 2;
@@ -32,9 +39,69 @@ const HeroSection = ({ t }: { t: Translations }) => {
       }
     };
 
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
+    // Handle device orientation for mobile devices
+    const handleOrientation = (e: DeviceOrientationEvent) => {
+      if (e.gamma !== null && e.beta !== null) {
+        // gamma: left to right tilt (-90 to 90)
+        // beta: front to back tilt (-180 to 180)
+        // Normalize to reasonable range for shadow effect
+        const deltaX = (e.gamma / 90) * 30; // -30 to 30
+        const deltaY = ((e.beta - 45) / 90) * 30; // Adjust for typical holding angle
+        
+        setMousePosition({ x: deltaX, y: deltaY });
+      }
+    };
+
+    // Handle device motion as fallback
+    const handleMotion = (e: DeviceMotionEvent) => {
+      if (e.accelerationIncludingGravity) {
+        const { x, y } = e.accelerationIncludingGravity;
+        if (x !== null && y !== null) {
+          // Use gravity to determine tilt
+          // Normalize acceleration values (typically -10 to 10)
+          const deltaX = (x / 10) * 30;
+          const deltaY = (y / 10) * 30;
+          
+          setMousePosition({ x: deltaX, y: deltaY });
+        }
+      }
+    };
+
+    // Request permission for iOS 13+ devices
+    const requestPermission = async () => {
+      if (typeof (DeviceOrientationEvent as any).requestPermission === 'function') {
+        try {
+          const permission = await (DeviceOrientationEvent as any).requestPermission();
+          if (permission === 'granted') {
+            window.addEventListener('deviceorientation', handleOrientation);
+          }
+        } catch (error) {
+          console.log('Device orientation permission denied');
+        }
+      } else {
+        // Non-iOS 13+ devices
+        window.addEventListener('deviceorientation', handleOrientation);
+      }
+    };
+
+    if (isMobile) {
+      // Try to use device orientation
+      if (window.DeviceOrientationEvent) {
+        requestPermission();
+      } else if (window.DeviceMotionEvent) {
+        // Fallback to device motion
+        window.addEventListener('devicemotion', handleMotion);
+      }
+    } else {
+      window.addEventListener("mousemove", handleMouseMove);
+    }
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener('deviceorientation', handleOrientation);
+      window.removeEventListener('devicemotion', handleMotion);
+    };
+  }, [isMobile]);
 
   // Create CSS custom properties for dynamic shadow values
   const shadowX = -mousePosition.x;

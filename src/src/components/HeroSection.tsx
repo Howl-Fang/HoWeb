@@ -36,11 +36,13 @@ const HeroSection = ({ t }: { t: Translations }) => {
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
-  const textShadow = `
-    ${-mousePosition.x}px ${-mousePosition.y}px 10px rgba(0, 0, 0, 0.3),
-    ${-mousePosition.x * 2}px ${-mousePosition.y * 2}px 20px rgba(0, 0, 0, 0.2),
-    ${-mousePosition.x * 3}px ${-mousePosition.y * 3}px 30px rgba(0, 0, 0, 0.1)
-  `;
+  // Create CSS custom properties for dynamic shadow values
+  const shadowX = -mousePosition.x;
+  const shadowY = -mousePosition.y;
+  const shadowX2 = -mousePosition.x * 2;
+  const shadowY2 = -mousePosition.y * 2;
+  const shadowX3 = -mousePosition.x * 3;
+  const shadowY3 = -mousePosition.y * 3;
 
   return (
     <section className="min-h-screen flex flex-col justify-center section-padding pt-32">
@@ -60,8 +62,18 @@ const HeroSection = ({ t }: { t: Translations }) => {
           initial="hidden"
           animate="visible"
           variants={fadeUp}
-          className="text-5xl md:text-7xl lg:text-8xl font-display text-foreground leading-tight mb-6"
-          style={{ textShadow }}
+          className="text-5xl md:text-7xl lg:text-8xl font-display text-foreground leading-tight mb-6 
+                     [text-shadow:var(--shadow-x)_var(--shadow-y)_10px_rgba(0,0,0,0.3),var(--shadow-x2)_var(--shadow-y2)_20px_rgba(0,0,0,0.2),var(--shadow-x3)_var(--shadow-y3)_30px_rgba(0,0,0,0.1)]
+                     dark:[text-shadow:var(--shadow-x)_var(--shadow-y)_10px_rgba(255,255,255,0.15),var(--shadow-x2)_var(--shadow-y2)_20px_rgba(255,255,255,0.1),var(--shadow-x3)_var(--shadow-y3)_30px_rgba(255,255,255,0.05),var(--shadow-x)_var(--shadow-y)_8px_rgba(0,0,0,0.4)]
+                     transition-[text-shadow] duration-300 ease-out"
+          style={{ 
+            ['--shadow-x' as string]: `${shadowX}px`,
+            ['--shadow-y' as string]: `${shadowY}px`,
+            ['--shadow-x2' as string]: `${shadowX2}px`,
+            ['--shadow-y2' as string]: `${shadowY2}px`,
+            ['--shadow-x3' as string]: `${shadowX3}px`,
+            ['--shadow-y3' as string]: `${shadowY3}px`,
+          }}
         >
           {t.hero.name}
         </motion.h1>

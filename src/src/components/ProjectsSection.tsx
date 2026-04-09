@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import type { Translations, Locale } from "@/i18n/translations";
 import { projects } from "@/data/projects";
 import ProjectCard from "./ProjectCard";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 
 interface ProjectsSectionProps {
   t: Translations;

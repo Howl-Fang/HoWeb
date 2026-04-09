@@ -11,43 +11,12 @@ interface ProjectsSectionProps {
 
 const ProjectsSection = ({ t, locale }: ProjectsSectionProps) => {
   const [hoveredProjectId, setHoveredProjectId] = useState<string | null>(null);
-  const [columns, setColumns] = useState(2);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const gridRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [scrollPosition, setScrollPosition] = useState(0);
 
-  useEffect(() => {
-    const updateColumns = () => {
-      if (!gridRef.current) return;
-      
-      const containerWidth = gridRef.current.clientWidth;
-      const gap = 24; // gap-6 = 1.5rem = 24px
-      const minCardWidth = 280; // Minimum card width
-      
-      // Calculate how many columns can fit
-      let cols = Math.floor((containerWidth + gap) / (minCardWidth + gap));
-      cols = Math.max(1, Math.min(cols, 3)); // Clamp between 1 and 3
-      
-      setColumns(cols);
-    };
-
-    // Use ResizeObserver for better responsiveness
-    const resizeObserver = new ResizeObserver(updateColumns);
-    if (gridRef.current) {
-      resizeObserver.observe(gridRef.current);
-    }
-
-    updateColumns();
-
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, []);
-
-  // Distribute projects into columns for masonry layout
-  const projectsByColumn = Array.from({ length: columns }, () => [] as typeof projects);
-  projects.forEach((project, index) => {
-    projectsByColumn[index % columns].push(project);
-  });
+  // Simple horizontal scroll with fixed card size
+  const cardWidth = 320; // Fixed card width
+  const gap = 24; // gap-6 = 1.5rem
 
   return (
     <section id="projects" className="section-padding bg-card">
@@ -63,30 +32,49 @@ const ProjectsSection = ({ t, locale }: ProjectsSectionProps) => {
         </motion.h2>
 
         {projects.length > 0 ? (
-          <div
-            ref={gridRef}
-            className="grid gap-6"
-            style={{
-              gridTemplateColumns: `repeat(${columns}, 1fr)`,
-            }}
-          >
-            {projectsByColumn.map((columnProjects, columnIndex) => (
-              <div key={columnIndex} className="flex flex-col gap-6">
-                {columnProjects.map((project, indexInColumn) => {
-                  const projectIndex = projects.findIndex(p => p.id === project.id);
-                  return (
-                    <ProjectCard
-                      key={project.id}
-                      project={project}
-                      locale={locale}
-                      index={projectIndex}
-                      hoveredId={hoveredProjectId}
-                      onHoverChange={setHoveredProjectId}
-                    />
-                  );
-                })}
+          <div className="relative overflow-hidden">
+            {/* Horizontal scroll container - 2 rows */}
+            <div
+              ref={scrollContainerRef}
+              className="flex gap-6 overflow-x-auto pb-4 scroll-smooth"
+              style={{
+                scrollBehavior: 'smooth',
+                scrollSnapType: 'x mandatory',
+              }}
+            >
+              <div className="flex flex-col gap-6">
+                {/* First row */}
+                {projects
+                  .filter((_, i) => i % 2 === 0)
+                  .map((project, index) => (
+                    <div key={`row1-${project.id}`} style={{ width: cardWidth }}>
+                      <ProjectCard
+                        project={project}
+                        locale={locale}
+                        index={index}
+                        hoveredId={hoveredProjectId}
+                        onHoverChange={setHoveredProjectId}
+                      />
+                    </div>
+                  ))}
               </div>
-            ))}
+              <div className="flex flex-col gap-6">
+                {/* Second row */}
+                {projects
+                  .filter((_, i) => i % 2 === 1)
+                  .map((project, index) => (
+                    <div key={`row2-${project.id}`} style={{ width: cardWidth }}>
+                      <ProjectCard
+                        project={project}
+                        locale={locale}
+                        index={index}
+                        hoveredId={hoveredProjectId}
+                        onHoverChange={setHoveredProjectId}
+                      />
+                    </div>
+                  ))}
+              </div>
+            </div>
           </div>
         ) : (
           <motion.div

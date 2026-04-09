@@ -16,45 +16,59 @@ const ProjectsSection = ({ t, locale }: ProjectsSectionProps) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const animationFrameRef = useRef<number>();
-  const scrollSpeedRef = useRef(1); // pixels per frame
+  const velocityRef = useRef(0);
+  const currentScrollRef = useRef(0);
 
-  const cardWidth = 320; // Fixed card width
   const gap = 24; // gap-6 = 1.5rem
-  const cardWithGap = cardWidth + gap;
+  const acceleration = 0.1;
+  const maxVelocity = 1.5;
+  const deceleration = 0.95;
+
+  // Split projects into two rows
+  const row1Projects = projects.filter((_, i) => i % 2 === 0);
+  const row2Projects = projects.filter((_, i) => i % 2 === 1);
 
   // Create duplicate projects for seamless loop
-  const duplicatedProjects = [...projects, ...projects];
+  const duplicatedRow1 = [...row1Projects, ...row1Projects];
+  const duplicatedRow2 = [...row2Projects, ...row2Projects];
 
   useEffect(() => {
     const container = scrollContainerRef.current;
     if (!container) return;
 
-    let currentScroll = 0;
-    let velocity = 0;
-    const acceleration = 0.1;
-    const maxVelocity = 1.5;
-    const deceleration = 0.95;
+    // Calculate total width once
+    const getRowWidth = (row: typeof row1Projects) => {
+      if (row.length === 0) return 0;
+      const cards = container.querySelectorAll('[data-carousel-card]');
+      let totalWidth = 0;
+      cards.forEach((card) => {
+        const rect = card.getBoundingClientRect();
+        if (rect.width > 0) totalWidth += rect.width;
+      });
+      return totalWidth + (row.length - 1) * gap;
+    };
 
     const animate = () => {
-      if (isHovering) {
-        // Decelerate when hovering
-        velocity *= deceleration;
-      } else {
+      if (!isHovering) {
         // Accelerate when not hovering
-        if (velocity < maxVelocity) {
-          velocity += acceleration;
+        if (velocityRef.current < maxVelocity) {
+          velocityRef.current += acceleration;
         }
+      } else {
+        // Just stop (don't decelerate to zero, just pause)
+        velocityRef.current = 0;
       }
 
-      currentScroll += velocity;
+      currentScrollRef.current += velocityRef.current;
 
       // Seamless loop: reset position when reaching the end
-      const totalWidth = projects.length * cardWithGap;
-      if (currentScroll >= totalWidth) {
-        currentScroll = 0;
+      // We need to calculate row width properly
+      const row1Width = getRowWidth(row1Projects);
+      if (row1Width > 0 && currentScrollRef.current >= row1Width) {
+        currentScrollRef.current = 0;
       }
 
-      setTranslateX(-currentScroll);
+      setTranslateX(-currentScrollRef.current);
       animationFrameRef.current = requestAnimationFrame(animate);
     };
 
@@ -65,50 +79,50 @@ const ProjectsSection = ({ t, locale }: ProjectsSectionProps) => {
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, [isHovering, projects.length, cardWithGap]);
+  }, [isHovering, row1Projects, row2Projects, gap]);
 
   return (
     <section id="projects" className="section-padding bg-card">
-      <div className="max-w-3xl mx-auto">
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6 }}
-          className="text-3xl md:text-4xl font-display text-card-foreground mb-8"
+      <motion.h2
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.6 }}
+        className="text-3xl md:text-4xl font-display text-card-foreground mb-8 section-padding"
+      >
+        {t.projects.title}
+      </motion.h2>
+
+      {projects.length > 0 ? (
+        <div 
+          className="relative overflow-hidden"
+          onMouseEnter={() => setIsHovering(true)}
+          onMouseLeave={() => setIsHovering(false)}
         >
-          {t.projects.title}
-        </motion.h2>
+          {/* Gradient overlay for smoother edges */}
+          <div className="absolute top-0 left-0 w-12 h-full bg-gradient-to-r from-card to-transparent z-10 pointer-events-none" />
+          <div className="absolute top-0 right-0 w-12 h-full bg-gradient-to-l from-card to-transparent z-10 pointer-events-none" />
 
-        {projects.length > 0 ? (
-          <div 
-            className="relative overflow-hidden rounded-lg"
-            onMouseEnter={() => setIsHovering(true)}
-            onMouseLeave={() => setIsHovering(false)}
+          {/* 2-row carousel */}
+          <div
+            ref={scrollContainerRef}
+            className="overflow-hidden"
           >
-            {/* Gradient overlay for smoother edges */}
-            <div className="absolute top-0 left-0 w-12 h-full bg-gradient-to-r from-card to-transparent z-10 pointer-events-none" />
-            <div className="absolute top-0 right-0 w-12 h-full bg-gradient-to-l from-card to-transparent z-10 pointer-events-none" />
-
-            {/* Horizontal scroll container - 2 rows */}
-            <div
-              ref={scrollContainerRef}
-              className="overflow-hidden"
+            <motion.div
+              className="grid gap-6"
+              style={{ gridTemplateRows: '1fr 1fr' }}
+              animate={{ x: translateX }}
+              transition={{ type: "tween", duration: 0, ease: "linear" }}
             >
-              <motion.div
-                ref={contentRef}
-                className="flex gap-6"
-                animate={{ x: translateX }}
-                transition={{ type: "tween", duration: 0, ease: "linear" }}
-              >
-                {duplicatedProjects.map((project, index) => {
-                  const isFirstSet = index < projects.length;
-                  const row = index % 2 === 0 ? 1 : 2;
-
+              {/* Row 1 */}
+              <div className="flex gap-6" style={{ gridColumn: '1 / -1' }}>
+                {duplicatedRow1.map((project, index) => {
+                  const isFirstSet = index < row1Projects.length;
                   return (
                     <div
-                      key={`${project.id}-${isFirstSet ? 'original' : 'duplicate'}`}
-                      style={{ width: cardWidth, flexShrink: 0 }}
+                      key={`row1-${project.id}-${isFirstSet ? 'original' : 'duplicate'}`}
+                      data-carousel-card
+                      className="flex-shrink-0"
                     >
                       <ProjectCard
                         project={project}
@@ -120,26 +134,48 @@ const ProjectsSection = ({ t, locale }: ProjectsSectionProps) => {
                     </div>
                   );
                 })}
-              </motion.div>
-            </div>
+              </div>
+
+              {/* Row 2 */}
+              <div className="flex gap-6" style={{ gridColumn: '1 / -1' }}>
+                {duplicatedRow2.map((project, index) => {
+                  const isFirstSet = index < row2Projects.length;
+                  return (
+                    <div
+                      key={`row2-${project.id}-${isFirstSet ? 'original' : 'duplicate'}`}
+                      data-carousel-card
+                      className="flex-shrink-0"
+                    >
+                      <ProjectCard
+                        project={project}
+                        locale={locale}
+                        index={index}
+                        hoveredId={hoveredProjectId}
+                        onHoverChange={setHoveredProjectId}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            </motion.div>
           </div>
-        ) : (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.6, delay: 0.15 }}
-            className="border border-border border-dashed rounded-md p-10 md:p-16 text-center"
-          >
-            <p className="text-muted-foreground font-body text-lg mb-2">
-              {t.projects.comingSoon}
-            </p>
-            <p className="text-muted-foreground/70 font-body text-sm">
-              {t.projects.description}
-            </p>
-          </motion.div>
-        )}
-      </div>
+        </div>
+      ) : (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6, delay: 0.15 }}
+          className="border border-border border-dashed rounded-md p-10 md:p-16 text-center section-padding"
+        >
+          <p className="text-muted-foreground font-body text-lg mb-2">
+            {t.projects.comingSoon}
+          </p>
+          <p className="text-muted-foreground/70 font-body text-sm">
+            {t.projects.description}
+          </p>
+        </motion.div>
+      )}
     </section>
   );
 };

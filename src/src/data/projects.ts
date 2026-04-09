@@ -27,23 +27,10 @@ export const projects: Project[] = [
       zh: "使用 React、TypeScript 和 Tailwind CSS 构建的现代个人网站。具有响应式设计、深色模式支持和多语言国际化功能。",
     },
     tags: ["React", "TypeScript", "Tailwind CSS", "Vite"],
-    github: "https://github.com/Howl-Fang/HoWeb",
-    demo: "https://Howl-Fang.win",
+    // github: "https://github.com/Howl-Fang/HoWeb",
+    demo: "https://Howl-Fang.github.io",
+    image: "https://avatars.githubusercontent.com/u/69738986?v=4",
   },
-  {
-    id: "project-2",
-    title: {
-      en: "Project Template",
-      zh: "项目模板",
-    },
-    description: {
-      en: "A reusable project template with best practices for modern web development.",
-      zh: "一个包含现代网页开发最佳实践的可重用项目模板。",
-    },
-    tags: ["Template", "Starter"],
-    github: "#",
-  },
-  
   {
     id: "project-4",
     title: {

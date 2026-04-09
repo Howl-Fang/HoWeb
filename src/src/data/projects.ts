@@ -43,18 +43,7 @@ export const projects: Project[] = [
     tags: ["Template", "Starter"],
     github: "#",
   },
-  {
-    id: "project-3",
-    title: {
-      en: "Coming Soon",
-      zh: "敬请期待",
-    },
-    description: {
-      en: "More exciting projects are under development.",
-      zh: "更多激动人心的项目正在开发中。",
-    },
-    tags: ["WIP"],
-  },
+  
   {
     id: "project-4",
     title: {
@@ -93,5 +82,17 @@ export const projects: Project[] = [
     },
     tags: ["Python", "Bilibili"],
     github: "https://github.com/Howl-Fang/Mix-m4s-from-bilibili-cache",
+  },
+  {
+    id: "project-1000",
+    title: {
+      en: "Coming Soon",
+      zh: "敬请期待",
+    },
+    description: {
+      en: "More exciting projects are under development.",
+      zh: "更多激动人心的项目正在开发中。",
+    },
+    tags: ["TODO"],
   },
 ];

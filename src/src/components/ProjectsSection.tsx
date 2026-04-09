@@ -28,25 +28,17 @@ const ProjectsSection = ({ t, locale }: ProjectsSectionProps) => {
   const row1Projects = projects.filter((_, i) => i % 2 === 0);
   const row2Projects = projects.filter((_, i) => i % 2 === 1);
 
-  // Create duplicate projects for seamless loop
-  const duplicatedRow1 = [...row1Projects, ...row1Projects];
-  const duplicatedRow2 = [...row2Projects, ...row2Projects];
+  // Create multiple duplicates for seamless infinite loop (at least 3 copies)
+  const duplicatedRow1 = [...row1Projects, ...row1Projects, ...row1Projects];
+  const duplicatedRow2 = [...row2Projects, ...row2Projects, ...row2Projects];
 
   useEffect(() => {
     const container = scrollContainerRef.current;
     if (!container) return;
 
-    // Calculate total width once
-    const getRowWidth = (row: typeof row1Projects) => {
-      if (row.length === 0) return 0;
-      const cards = container.querySelectorAll('[data-carousel-card]');
-      let totalWidth = 0;
-      cards.forEach((card) => {
-        const rect = card.getBoundingClientRect();
-        if (rect.width > 0) totalWidth += rect.width;
-      });
-      return totalWidth + (row.length - 1) * gap;
-    };
+    // Store the single row width for reset logic
+    let singleRowWidth = 0;
+    let isWidthCalculated = false;
 
     const animate = () => {
       if (!isHovering) {
@@ -61,11 +53,30 @@ const ProjectsSection = ({ t, locale }: ProjectsSectionProps) => {
 
       currentScrollRef.current += velocityRef.current;
 
-      // Seamless loop: reset position when reaching the end
-      // We need to calculate row width properly
-      const row1Width = getRowWidth(row1Projects);
-      if (row1Width > 0 && currentScrollRef.current >= row1Width) {
-        currentScrollRef.current = 0;
+      // Calculate width on first animation frame
+      if (!isWidthCalculated) {
+        const cards = container.querySelectorAll('[data-carousel-card]');
+        let totalWidth = 0;
+        let cardCount = 0;
+
+        cards.forEach((card) => {
+          const rect = card.getBoundingClientRect();
+          if (rect.width > 0) {
+            totalWidth += rect.width;
+            cardCount++;
+          }
+        });
+
+        // singleRowWidth = one set of original projects
+        if (cardCount > 0) {
+          singleRowWidth = totalWidth / 3 + (row1Projects.length - 1) * gap;
+          isWidthCalculated = true;
+        }
+      }
+
+      // Seamless loop: reset when we've scrolled past the first copy
+      if (singleRowWidth > 0 && currentScrollRef.current >= singleRowWidth) {
+        currentScrollRef.current -= singleRowWidth;
       }
 
       setTranslateX(-currentScrollRef.current);

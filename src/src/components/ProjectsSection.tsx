@@ -152,6 +152,7 @@ const ProjectsSection = ({ t, locale }: ProjectsSectionProps) => {
                       key={`row1-${project.id}-${index}`}
                       data-carousel-card
                       className="flex-shrink-0"
+                      style={{ maxWidth: '400px' }}
                     >
                       <ProjectCard
                         project={project}
@@ -174,6 +175,7 @@ const ProjectsSection = ({ t, locale }: ProjectsSectionProps) => {
                       key={`row2-${project.id}-${index}`}
                       data-carousel-card
                       className="flex-shrink-0"
+                      style={{ maxWidth: '400px' }}
                     >
                       <ProjectCard
                         project={project}

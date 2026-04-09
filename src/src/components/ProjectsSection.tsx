@@ -13,24 +13,34 @@ const ProjectsSection = ({ t, locale }: ProjectsSectionProps) => {
   const [hoveredProjectId, setHoveredProjectId] = useState<string | null>(null);
   const [columns, setColumns] = useState(2);
   const containerRef = useRef<HTMLDivElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const updateColumns = () => {
-      if (!containerRef.current) return;
-      const width = containerRef.current.offsetWidth;
+      if (!gridRef.current) return;
       
-      if (width < 768) {
-        setColumns(1);
-      } else if (width < 1024) {
-        setColumns(2);
-      } else {
-        setColumns(3);
-      }
+      const containerWidth = gridRef.current.clientWidth;
+      const gap = 24; // gap-6 = 1.5rem = 24px
+      const minCardWidth = 280; // Minimum card width
+      
+      // Calculate how many columns can fit
+      let cols = Math.floor((containerWidth + gap) / (minCardWidth + gap));
+      cols = Math.max(1, Math.min(cols, 3)); // Clamp between 1 and 3
+      
+      setColumns(cols);
     };
 
+    // Use ResizeObserver for better responsiveness
+    const resizeObserver = new ResizeObserver(updateColumns);
+    if (gridRef.current) {
+      resizeObserver.observe(gridRef.current);
+    }
+
     updateColumns();
-    window.addEventListener('resize', updateColumns);
-    return () => window.removeEventListener('resize', updateColumns);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
   }, []);
 
   // Distribute projects into columns for masonry layout
@@ -41,7 +51,7 @@ const ProjectsSection = ({ t, locale }: ProjectsSectionProps) => {
 
   return (
     <section id="projects" className="section-padding bg-card">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-3xl mx-auto">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -54,7 +64,7 @@ const ProjectsSection = ({ t, locale }: ProjectsSectionProps) => {
 
         {projects.length > 0 ? (
           <div
-            ref={containerRef}
+            ref={gridRef}
             className="grid gap-6"
             style={{
               gridTemplateColumns: `repeat(${columns}, 1fr)`,

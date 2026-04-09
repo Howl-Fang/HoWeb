@@ -13,35 +13,57 @@ const ProjectsSection = ({ t, locale }: ProjectsSectionProps) => {
   const [hoveredProjectId, setHoveredProjectId] = useState<string | null>(null);
   const [isHovering, setIsHovering] = useState(false);
   const [translateX, setTranslateX] = useState(0);
-  const [displayRow1, setDisplayRow1] = useState<typeof projects>([]);
-  const [displayRow2, setDisplayRow2] = useState<typeof projects>([]);
+  const [displayItems1, setDisplayItems1] = useState<Array<{ project: typeof projects[0]; id: string }>>([]);
+  const [displayItems2, setDisplayItems2] = useState<Array<{ project: typeof projects[0]; id: string }>>([]);
   
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const animationFrameRef = useRef<number>();
   const velocityRef = useRef(0);
   const currentScrollRef = useRef(0);
+  const virtualIndexRef = useRef(0);
+  const containerWidthRef = useRef(0);
   const singleRowWidthRef = useRef(0);
-  const totalContentWidthRef = useRef(0);
-  const lastRefillScrollRef = useRef(0);
 
   const gap = 24;
   const acceleration = 0.1;
   const maxVelocity = 1.5;
-  const bufferThreshold = 0.7; // Refill when 70% scrolled
+  const preloadBuffer = 1.5; // Load 1.5x container width ahead
 
-  // Split projects into two rows
   const row1Projects = projects.filter((_, i) => i % 2 === 0);
   const row2Projects = projects.filter((_, i) => i % 2 === 1);
 
-  // Initialize display arrays with 2 copies
-  useEffect(() => {
-    setDisplayRow1([...row1Projects, ...row1Projects]);
-    setDisplayRow2([...row2Projects, ...row2Projects]);
+  // Generate display items based on virtual index and container width
+  const generateDisplayItems = useCallback((
+    rowProjects: typeof projects,
+    startIndex: number,
+    rowCount: number
+  ) => {
+    if (rowProjects.length === 0 || containerWidthRef.current === 0) return [];
+    
+    const itemsCount = Math.ceil(containerWidthRef.current * preloadBuffer / 400); // 400 is avg card width
+    const items = [];
+    
+    for (let i = 0; i < itemsCount; i++) {
+      const actualIndex = (startIndex + i) % rowProjects.length;
+      const project = rowProjects[actualIndex];
+      items.push({
+        project,
+        id: `${project.id}-${startIndex + i}`, // Unique key for each rendered position
+      });
+    }
+    
+    return items;
   }, []);
+
+  // Initialize with first set of items
+  useEffect(() => {
+    setDisplayItems1(generateDisplayItems(row1Projects, 0, row1Projects.length));
+    setDisplayItems2(generateDisplayItems(row2Projects, 0, row2Projects.length));
+  }, [generateDisplayItems, row1Projects, row2Projects]);
 
   useEffect(() => {
     const container = scrollContainerRef.current;
-    if (!container || displayRow1.length === 0) return;
+    if (!container || displayItems1.length === 0) return;
 
     let isWidthCalculated = false;
 
@@ -56,7 +78,7 @@ const ProjectsSection = ({ t, locale }: ProjectsSectionProps) => {
 
       currentScrollRef.current += velocityRef.current;
 
-      // Calculate width on first animation frame
+      // Calculate dimensions on first frame
       if (!isWidthCalculated) {
         const cards = container.querySelectorAll('[data-carousel-card]');
         let totalWidth = 0;
@@ -68,33 +90,35 @@ const ProjectsSection = ({ t, locale }: ProjectsSectionProps) => {
           }
         });
 
-        if (totalWidth > 0) {
-          // Calculate single row width (original projects only)
-          singleRowWidthRef.current = totalWidth / 2 + (row1Projects.length - 1) * gap;
-          totalContentWidthRef.current = totalWidth + (displayRow1.length - 1) * gap;
+        if (totalWidth > 0 && displayItems1.length > 0) {
+          containerWidthRef.current = container.clientWidth;
+          singleRowWidthRef.current = totalWidth / displayItems1.length;
           isWidthCalculated = true;
         }
       }
 
-      // Dynamic refill: add more cards when approaching threshold
+      // Update virtual index based on scroll
       const singleRowWidth = singleRowWidthRef.current;
-      const refillPoint = singleRowWidth * bufferThreshold;
+      if (singleRowWidth > 0) {
+        // Calculate how many original items we've scrolled past
+        const cardsScrolled = Math.floor(currentScrollRef.current / singleRowWidth);
+        virtualIndexRef.current = cardsScrolled % row1Projects.length;
 
-      if (
-        singleRowWidth > 0 &&
-        currentScrollRef.current >= refillPoint &&
-        currentScrollRef.current - lastRefillScrollRef.current > singleRowWidth * 0.5
-      ) {
-        // Add more cards to buffer
-        setDisplayRow1((prev) => [...prev, ...row1Projects]);
-        setDisplayRow2((prev) => [...prev, ...row2Projects]);
-        lastRefillScrollRef.current = currentScrollRef.current;
-      }
+        // When approaching the end (70% scrolled), regenerate to maintain buffer
+        if (displayItems1.length > 0) {
+          const displayedWidth = displayItems1.length * singleRowWidth;
+          const scrollProgress = currentScrollRef.current % displayedWidth;
 
-      // Soft reset: when scrolled past first set, subtract one set of width
-      if (singleRowWidth > 0 && currentScrollRef.current >= singleRowWidth) {
-        currentScrollRef.current -= singleRowWidth;
-        lastRefillScrollRef.current -= singleRowWidth;
+          if (scrollProgress > displayedWidth * 0.7) {
+            // Refill the display items from new starting position
+            const newStartIndex = (virtualIndexRef.current + Math.floor(displayItems1.length * 0.5)) % row1Projects.length;
+            setDisplayItems1(generateDisplayItems(row1Projects, newStartIndex, row1Projects.length));
+            setDisplayItems2(generateDisplayItems(row2Projects, newStartIndex, row2Projects.length));
+            
+            // Soft reset: move back by the amount we've scrolled
+            currentScrollRef.current = currentScrollRef.current % displayedWidth;
+          }
+        }
       }
 
       setTranslateX(-currentScrollRef.current);
@@ -108,7 +132,7 @@ const ProjectsSection = ({ t, locale }: ProjectsSectionProps) => {
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, [isHovering, displayRow1.length, row1Projects, row2Projects]);
+  }, [isHovering, displayItems1.length, row1Projects, row2Projects, generateDisplayItems]);
 
   return (
     <section id="projects" className="section-padding bg-card">
@@ -145,48 +169,42 @@ const ProjectsSection = ({ t, locale }: ProjectsSectionProps) => {
             >
               {/* Row 1 */}
               <div className="flex gap-6" style={{ gridColumn: '1 / -1' }}>
-                {displayRow1.map((project, index) => {
-                  const isFirstSet = index < row1Projects.length;
-                  return (
-                    <div
-                      key={`row1-${project.id}-${index}`}
-                      data-carousel-card
-                      className="flex-shrink-0"
-                      style={{ maxWidth: '400px' }}
-                    >
-                      <ProjectCard
-                        project={project}
-                        locale={locale}
-                        index={index}
-                        hoveredId={hoveredProjectId}
-                        onHoverChange={setHoveredProjectId}
-                      />
-                    </div>
-                  );
-                })}
+                {displayItems1.map(({ project, id }) => (
+                  <div
+                    key={id}
+                    data-carousel-card
+                    className="flex-shrink-0"
+                    style={{ maxWidth: '400px' }}
+                  >
+                    <ProjectCard
+                      project={project}
+                      locale={locale}
+                      index={0}
+                      hoveredId={hoveredProjectId}
+                      onHoverChange={setHoveredProjectId}
+                    />
+                  </div>
+                ))}
               </div>
 
               {/* Row 2 */}
               <div className="flex gap-6" style={{ gridColumn: '1 / -1' }}>
-                {displayRow2.map((project, index) => {
-                  const isFirstSet = index < row2Projects.length;
-                  return (
-                    <div
-                      key={`row2-${project.id}-${index}`}
-                      data-carousel-card
-                      className="flex-shrink-0"
-                      style={{ maxWidth: '400px' }}
-                    >
-                      <ProjectCard
-                        project={project}
-                        locale={locale}
-                        index={index}
-                        hoveredId={hoveredProjectId}
-                        onHoverChange={setHoveredProjectId}
-                      />
-                    </div>
-                  );
-                })}
+                {displayItems2.map(({ project, id }) => (
+                  <div
+                    key={id}
+                    data-carousel-card
+                    className="flex-shrink-0"
+                    style={{ maxWidth: '400px' }}
+                  >
+                    <ProjectCard
+                      project={project}
+                      locale={locale}
+                      index={0}
+                      hoveredId={hoveredProjectId}
+                      onHoverChange={setHoveredProjectId}
+                    />
+                  </div>
+                ))}
               </div>
             </motion.div>
           </div>

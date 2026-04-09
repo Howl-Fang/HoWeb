@@ -36,11 +36,12 @@ const ProjectsSection = ({ t, locale }: ProjectsSectionProps) => {
   const generateDisplayItems = useCallback((
     rowProjects: typeof projects,
     startIndex: number,
-    rowCount: number
+    rowCount: number,
+    width: number = containerWidthRef.current || 800 // Default width if not calculated yet
   ) => {
-    if (rowProjects.length === 0 || containerWidthRef.current === 0) return [];
+    if (rowProjects.length === 0) return [];
     
-    const itemsCount = Math.ceil(containerWidthRef.current * preloadBuffer / 400); // 400 is avg card width
+    const itemsCount = Math.ceil((width * preloadBuffer) / 400); // 400 is avg card width
     const items = [];
     
     for (let i = 0; i < itemsCount; i++) {
@@ -53,12 +54,17 @@ const ProjectsSection = ({ t, locale }: ProjectsSectionProps) => {
     }
     
     return items;
-  }, []);
+  }, [preloadBuffer]);
 
   // Initialize with first set of items
   useEffect(() => {
-    setDisplayItems1(generateDisplayItems(row1Projects, 0, row1Projects.length));
-    setDisplayItems2(generateDisplayItems(row2Projects, 0, row2Projects.length));
+    // Get container width for better initialization
+    const container = scrollContainerRef.current;
+    const initialWidth = container?.clientWidth || 800;
+    containerWidthRef.current = initialWidth;
+    
+    setDisplayItems1(generateDisplayItems(row1Projects, 0, row1Projects.length, initialWidth));
+    setDisplayItems2(generateDisplayItems(row2Projects, 0, row2Projects.length, initialWidth));
   }, [generateDisplayItems, row1Projects, row2Projects]);
 
   useEffect(() => {

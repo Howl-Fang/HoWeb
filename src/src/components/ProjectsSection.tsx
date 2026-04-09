@@ -13,41 +13,44 @@ const ProjectsSection = ({ t, locale }: ProjectsSectionProps) => {
   const [hoveredProjectId, setHoveredProjectId] = useState<string | null>(null);
   const [isHovering, setIsHovering] = useState(false);
   const [translateX, setTranslateX] = useState(0);
+  const [displayRow1, setDisplayRow1] = useState<typeof projects>([]);
+  const [displayRow2, setDisplayRow2] = useState<typeof projects>([]);
+  
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
   const animationFrameRef = useRef<number>();
   const velocityRef = useRef(0);
   const currentScrollRef = useRef(0);
+  const singleRowWidthRef = useRef(0);
+  const totalContentWidthRef = useRef(0);
+  const lastRefillScrollRef = useRef(0);
 
-  const gap = 24; // gap-6 = 1.5rem
+  const gap = 24;
   const acceleration = 0.1;
   const maxVelocity = 1.5;
-  const deceleration = 0.95;
+  const bufferThreshold = 0.7; // Refill when 70% scrolled
 
   // Split projects into two rows
   const row1Projects = projects.filter((_, i) => i % 2 === 0);
   const row2Projects = projects.filter((_, i) => i % 2 === 1);
 
-  // Create multiple duplicates for seamless infinite loop (at least 3 copies)
-  const duplicatedRow1 = [...row1Projects, ...row1Projects, ...row1Projects];
-  const duplicatedRow2 = [...row2Projects, ...row2Projects, ...row2Projects];
+  // Initialize display arrays with 2 copies
+  useEffect(() => {
+    setDisplayRow1([...row1Projects, ...row1Projects]);
+    setDisplayRow2([...row2Projects, ...row2Projects]);
+  }, []);
 
   useEffect(() => {
     const container = scrollContainerRef.current;
-    if (!container) return;
+    if (!container || displayRow1.length === 0) return;
 
-    // Store the single row width for reset logic
-    let singleRowWidth = 0;
     let isWidthCalculated = false;
 
     const animate = () => {
       if (!isHovering) {
-        // Accelerate when not hovering
         if (velocityRef.current < maxVelocity) {
           velocityRef.current += acceleration;
         }
       } else {
-        // Just stop (don't decelerate to zero, just pause)
         velocityRef.current = 0;
       }
 
@@ -57,26 +60,41 @@ const ProjectsSection = ({ t, locale }: ProjectsSectionProps) => {
       if (!isWidthCalculated) {
         const cards = container.querySelectorAll('[data-carousel-card]');
         let totalWidth = 0;
-        let cardCount = 0;
 
         cards.forEach((card) => {
           const rect = card.getBoundingClientRect();
           if (rect.width > 0) {
             totalWidth += rect.width;
-            cardCount++;
           }
         });
 
-        // singleRowWidth = one set of original projects
-        if (cardCount > 0) {
-          singleRowWidth = totalWidth / 3 + (row1Projects.length - 1) * gap;
+        if (totalWidth > 0) {
+          // Calculate single row width (original projects only)
+          singleRowWidthRef.current = totalWidth / 2 + (row1Projects.length - 1) * gap;
+          totalContentWidthRef.current = totalWidth + (displayRow1.length - 1) * gap;
           isWidthCalculated = true;
         }
       }
 
-      // Seamless loop: reset when we've scrolled past the first copy
+      // Dynamic refill: add more cards when approaching threshold
+      const singleRowWidth = singleRowWidthRef.current;
+      const refillPoint = singleRowWidth * bufferThreshold;
+
+      if (
+        singleRowWidth > 0 &&
+        currentScrollRef.current >= refillPoint &&
+        currentScrollRef.current - lastRefillScrollRef.current > singleRowWidth * 0.5
+      ) {
+        // Add more cards to buffer
+        setDisplayRow1((prev) => [...prev, ...row1Projects]);
+        setDisplayRow2((prev) => [...prev, ...row2Projects]);
+        lastRefillScrollRef.current = currentScrollRef.current;
+      }
+
+      // Soft reset: when scrolled past first set, subtract one set of width
       if (singleRowWidth > 0 && currentScrollRef.current >= singleRowWidth) {
         currentScrollRef.current -= singleRowWidth;
+        lastRefillScrollRef.current -= singleRowWidth;
       }
 
       setTranslateX(-currentScrollRef.current);
@@ -90,7 +108,7 @@ const ProjectsSection = ({ t, locale }: ProjectsSectionProps) => {
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, [isHovering, row1Projects, row2Projects, gap]);
+  }, [isHovering, displayRow1.length, row1Projects, row2Projects]);
 
   return (
     <section id="projects" className="section-padding bg-card">
@@ -127,11 +145,11 @@ const ProjectsSection = ({ t, locale }: ProjectsSectionProps) => {
             >
               {/* Row 1 */}
               <div className="flex gap-6" style={{ gridColumn: '1 / -1' }}>
-                {duplicatedRow1.map((project, index) => {
+                {displayRow1.map((project, index) => {
                   const isFirstSet = index < row1Projects.length;
                   return (
                     <div
-                      key={`row1-${project.id}-${isFirstSet ? 'original' : 'duplicate'}`}
+                      key={`row1-${project.id}-${index}`}
                       data-carousel-card
                       className="flex-shrink-0"
                     >
@@ -149,11 +167,11 @@ const ProjectsSection = ({ t, locale }: ProjectsSectionProps) => {
 
               {/* Row 2 */}
               <div className="flex gap-6" style={{ gridColumn: '1 / -1' }}>
-                {duplicatedRow2.map((project, index) => {
+                {displayRow2.map((project, index) => {
                   const isFirstSet = index < row2Projects.length;
                   return (
                     <div
-                      key={`row2-${project.id}-${isFirstSet ? 'original' : 'duplicate'}`}
+                      key={`row2-${project.id}-${index}`}
                       data-carousel-card
                       className="flex-shrink-0"
                     >

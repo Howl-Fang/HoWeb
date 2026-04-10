@@ -47,8 +47,10 @@
     --sidebar-ring: 30 8% 40%;
 
     /* Custom tokens */
-    --font-display: 'Poly Regular', 'Baskerville', 'Song', 'GenYoMin M', Georgia, serif;
-    --font-body: 'Poly Regular', 'Baskerville', 'Song', 'GenYoMin M', system-ui, sans-serif;
+    --font-display: 'Merriweather', 'Noto Serif SC', Georgia, serif;
+    --font-body: 'Merriweather', 'Noto Serif SC', system-ui, sans-serif;
+    /* --font-display: 'Poly Regular', 'Song', 'Baskerville', 'GenYoMin M', Georgia, serif;
+    --font-body: 'Poly Regular', 'Song', 'Baskerville', 'GenYoMin M', system-ui, sans-serif; */
     /* --font-display: 'Instrument Serif', 'Noto Serif SC', Georgia, serif;
     --font-body: 'Source Sans 3', 'Noto Sans SC', system-ui, sans-serif; */
     --subtle-shadow: 0 1px 3px hsl(30 10% 15% / 0.04);
@@ -104,5 +106,25 @@
 @layer utilities {
   .section-padding {
     @apply px-6 md:px-12 lg:px-24 py-16 md:py-24;
+  }
+
+  .underline-hover {
+    position: relative;
+    display: inline-block;
+  }
+
+  .underline-hover::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: currentColor;
+    transition: width 0.3s ease;
+  }
+
+  .underline-hover:hover::after {
+    width: 100%;
   }
 }

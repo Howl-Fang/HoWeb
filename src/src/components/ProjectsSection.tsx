@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import type { Translations, Locale } from "@/i18n/translations";
 import { projects } from "@/data/projects";
 import ProjectCard from "./ProjectCard";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 interface ProjectsSectionProps {
   t: Translations;
@@ -11,6 +11,43 @@ interface ProjectsSectionProps {
 
 const ProjectsSection = ({ t, locale }: ProjectsSectionProps) => {
   const [hoveredProjectId, setHoveredProjectId] = useState<string | null>(null);
+  const [columns, setColumns] = useState(2);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const updateColumns = () => {
+      if (!gridRef.current) return;
+      
+      const containerWidth = gridRef.current.clientWidth;
+      const gap = 24; // gap-6 = 1.5rem = 24px
+      const minCardWidth = 280; // Minimum card width
+      
+      // Calculate how many columns can fit
+      let cols = Math.floor((containerWidth + gap) / (minCardWidth + gap));
+      cols = Math.max(1, Math.min(cols, 3)); // Clamp between 1 and 3
+      
+      setColumns(cols);
+    };
+
+    // Use ResizeObserver for better responsiveness
+    const resizeObserver = new ResizeObserver(updateColumns);
+    if (gridRef.current) {
+      resizeObserver.observe(gridRef.current);
+    }
+
+    updateColumns();
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
+
+  // Distribute projects into columns for masonry layout
+  const projectsByColumn = Array.from({ length: columns }, () => [] as typeof projects);
+  projects.forEach((project, index) => {
+    projectsByColumn[index % columns].push(project);
+  });
 
   return (
     <section id="projects" className="section-padding bg-card">
@@ -26,16 +63,29 @@ const ProjectsSection = ({ t, locale }: ProjectsSectionProps) => {
         </motion.h2>
 
         {projects.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {projects.map((project, index) => (
-              <ProjectCard
-                key={project.id}
-                project={project}
-                locale={locale}
-                index={index}
-                hoveredId={hoveredProjectId}
-                onHoverChange={setHoveredProjectId}
-              />
+          <div
+            ref={gridRef}
+            className="grid gap-6"
+            style={{
+              gridTemplateColumns: `repeat(${columns}, 1fr)`,
+            }}
+          >
+            {projectsByColumn.map((columnProjects, columnIndex) => (
+              <div key={columnIndex} className="flex flex-col gap-6">
+                {columnProjects.map((project, indexInColumn) => {
+                  const projectIndex = projects.findIndex(p => p.id === project.id);
+                  return (
+                    <ProjectCard
+                      key={project.id}
+                      project={project}
+                      locale={locale}
+                      index={projectIndex}
+                      hoveredId={hoveredProjectId}
+                      onHoverChange={setHoveredProjectId}
+                    />
+                  );
+                })}
+              </div>
             ))}
           </div>
         ) : (

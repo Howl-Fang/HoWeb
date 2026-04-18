@@ -32,6 +32,20 @@ export const projects: Project[] = [
     image: "https://avatars.githubusercontent.com/u/69738986?v=4",
   },
   {
+    id: "project-2",
+    title: {
+      en: "Notes Set",
+      zh: "笔记集",
+    },
+    description: {
+      en: "A collection of notes and resources on various topics",
+      zh: "关于各种主题的笔记和资源集合",
+    },
+    tags: ["Markdown"],
+    github: "https://github.com/Howl-Fang/Notes_set",
+
+  },
+  {
     id: "project-4",
     title: {
       en: "Disable AWDL",

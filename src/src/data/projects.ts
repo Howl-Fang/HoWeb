@@ -91,9 +91,9 @@ export const projects: Project[] = [
       zh: "敬请期待",
     },
     description: {
-      en: "More exciting projects are under development.",
-      zh: "更多激动人心的项目正在开发中。",
+      en: "More exciting projects are under development. Stay tuned at my GitHub.",
+      zh: "更多激动人心的项目正在开发中。关注我的 GitHub。",
     },
-    tags: ["TODO"],
+    tags: [],
   },
 ];

@@ -32,6 +32,20 @@ export const projects: Project[] = [
     image: "https://avatars.githubusercontent.com/u/69738986?v=4",
   },
   {
+    id: "project-2",
+    title: {
+      en: "Notes Set",
+      zh: "笔记集",
+    },
+    description: {
+      en: "A collection of notes and resources on various topics",
+      zh: "关于各种主题的笔记和资源集合",
+    },
+    tags: ["Markdown"],
+    github: "https://github.com/Howl-Fang/Notes_set",
+
+  },
+  {
     id: "project-4",
     title: {
       en: "Disable AWDL",
@@ -77,9 +91,10 @@ export const projects: Project[] = [
       zh: "敬请期待",
     },
     description: {
-      en: "More exciting projects are under development.",
-      zh: "更多激动人心的项目正在开发中。",
+      en: "More exciting projects are under development. Stay tuned at my GitHub.",
+      zh: "更多激动人心的项目正在开发中。关注我的 GitHub。",
     },
-    tags: ["TODO"],
+    tags: [],
+    github: "https://github.com/Howl-Fang"
   },
 ];

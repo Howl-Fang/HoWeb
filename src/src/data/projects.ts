@@ -95,5 +95,6 @@ export const projects: Project[] = [
       zh: "更多激动人心的项目正在开发中。关注我的 GitHub。",
     },
     tags: [],
+    github: "https://github.com/Howl-Fang"
   },
 ];

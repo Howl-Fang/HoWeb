@@ -14,6 +14,7 @@ const ease: Easing = "easeOut";
 
 const DEFAULT_SHADOW = { x: 0, y: 8 };
 const SHADOW_RANGE = 300;
+const TILT_MAX = 8;
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 30 },
@@ -51,12 +52,17 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
   const [isMobile, setIsMobile] = useState(() =>
     /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
   );
-  const nameRef = useRef<HTMLHeadingElement>(null);
+  const nameRef = useRef<HTMLDivElement>(null);
 
   const targetX = useMotionValue(DEFAULT_SHADOW.x);
   const targetY = useMotionValue(DEFAULT_SHADOW.y);
   const shadowX = useSpring(targetX, { stiffness: 150, damping: 20, mass: 0.5 });
   const shadowY = useSpring(targetY, { stiffness: 150, damping: 20, mass: 0.5 });
+
+  const targetTiltX = useMotionValue(0);
+  const targetTiltY = useMotionValue(0);
+  const tiltX = useSpring(targetTiltX, { stiffness: 150, damping: 20, mass: 0.5 });
+  const tiltY = useSpring(targetTiltY, { stiffness: 150, damping: 20, mass: 0.5 });
 
   const shadowX1 = useTransform(shadowX, (v) => `${v}px`);
   const shadowY1 = useTransform(shadowY, (v) => `${v}px`);
@@ -75,9 +81,11 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
   } as MotionStyle;
 
   useEffect(() => {
-    const resetShadow = () => {
+    const resetTargets = () => {
       targetX.set(DEFAULT_SHADOW.x);
       targetY.set(DEFAULT_SHADOW.y);
+      targetTiltX.set(0);
+      targetTiltY.set(0);
     };
 
     const handleMouseMove = (e: MouseEvent) => {
@@ -92,7 +100,7 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
       const distance = Math.hypot(overflowX, overflowY);
 
       if (distance > SHADOW_RANGE) {
-        resetShadow();
+        resetTargets();
         return;
       }
 
@@ -103,10 +111,17 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
       const deltaX = (e.clientX - centerX) / 10;
       const deltaY = (e.clientY - centerY) / 10;
 
+      const nx = Math.max(-1, Math.min(1, (e.clientX - centerX) / (rect.width / 2)));
+      const ny = Math.max(-1, Math.min(1, (e.clientY - centerY) / (rect.height / 2)));
+
       // On the title the shadow tracks the mouse (centered at the text center),
       // off the title it settles back to the default position below the text
       targetX.set(-deltaX * influence);
       targetY.set(-deltaY * influence + DEFAULT_SHADOW.y * (1 - influence));
+
+      // Tilt the text slightly toward the mouse
+      targetTiltX.set(-ny * TILT_MAX * influence);
+      targetTiltY.set(nx * TILT_MAX * influence);
     };
 
     // Handle device orientation for mobile devices
@@ -167,18 +182,18 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
       }
     } else {
       window.addEventListener("mousemove", handleMouseMove, { passive: true });
-      document.documentElement.addEventListener("mouseleave", resetShadow);
-      window.addEventListener("blur", resetShadow);
+      document.documentElement.addEventListener("mouseleave", resetTargets);
+      window.addEventListener("blur", resetTargets);
     }
 
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
-      document.documentElement.removeEventListener("mouseleave", resetShadow);
-      window.removeEventListener("blur", resetShadow);
+      document.documentElement.removeEventListener("mouseleave", resetTargets);
+      window.removeEventListener("blur", resetTargets);
       window.removeEventListener("deviceorientation", handleOrientation);
       window.removeEventListener("devicemotion", handleMotion);
     };
-  }, [isMobile, targetX, targetY]);
+  }, [isMobile, targetX, targetY, targetTiltX, targetTiltY]);
 
   return (
     <section className="min-h-screen flex flex-col justify-center section-padding pt-32">
@@ -188,36 +203,54 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
           initial="hidden"
           animate={loading ? "hidden" : "visible"}
           variants={fadeUp}
-          className="text-muted-foreground text-base md:text-lg font-body tracking-wide mb-3"
+          className="relative z-10 text-muted-foreground text-base md:text-lg font-body tracking-wide mb-3"
         >
           {t.hero.greeting}
         </motion.p>
-        <motion.h1
+        <motion.div
           ref={nameRef}
-          initial="hidden"
-          animate={loading ? "hidden" : "visible"}
-          variants={nameContainer}
-          style={shadowVars}
-          className="w-fit max-w-full text-5xl md:text-7xl lg:text-8xl font-display text-foreground leading-tight mb-6 
-                     [text-shadow:var(--shadow-x)_var(--shadow-y)_10px_rgba(0,0,0,0.3),var(--shadow-x2)_var(--shadow-y2)_20px_rgba(0,0,0,0.2),var(--shadow-x3)_var(--shadow-y3)_30px_rgba(0,0,0,0.1)]
-                     dark:[text-shadow:var(--shadow-x)_var(--shadow-y)_10px_rgba(255,255,255,0.15),var(--shadow-x2)_var(--shadow-y2)_20px_rgba(255,255,255,0.1),var(--shadow-x3)_var(--shadow-y3)_30px_rgba(255,255,255,0.05),var(--shadow-x)_var(--shadow-y)_8px_rgba(0,0,0,0.4)]"
+          style={{
+            ...shadowVars,
+            rotateX: tiltX,
+            rotateY: tiltY,
+            transformPerspective: 800,
+          }}
+          className="relative w-fit max-w-full text-5xl md:text-7xl lg:text-8xl font-display leading-tight mb-6"
         >
-          {Array.from(t.hero.name).map((char, i) => (
-            <motion.span
-              key={`${char}-${i}`}
-              variants={nameChar}
-              className="inline-block"
-            >
-              {char === " " ? "\u00A0" : char}
-            </motion.span>
-          ))}
-        </motion.h1>
+          <motion.span
+            aria-hidden="true"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: loading ? 0 : 1 }}
+            transition={{ delay: 0.3, duration: 0.8, ease }}
+            className="absolute inset-0 block text-transparent
+                       [text-shadow:var(--shadow-x)_var(--shadow-y)_10px_rgba(0,0,0,0.3),var(--shadow-x2)_var(--shadow-y2)_20px_rgba(0,0,0,0.2),var(--shadow-x3)_var(--shadow-y3)_30px_rgba(0,0,0,0.1)]
+                       dark:[text-shadow:var(--shadow-x)_var(--shadow-y)_10px_rgba(255,255,255,0.15),var(--shadow-x2)_var(--shadow-y2)_20px_rgba(255,255,255,0.1),var(--shadow-x3)_var(--shadow-y3)_30px_rgba(255,255,255,0.05),var(--shadow-x)_var(--shadow-y)_8px_rgba(0,0,0,0.4)]"
+          >
+            {t.hero.name}
+          </motion.span>
+          <motion.h1
+            initial="hidden"
+            animate={loading ? "hidden" : "visible"}
+            variants={nameContainer}
+            className="relative text-foreground"
+          >
+            {Array.from(t.hero.name).map((char, i) => (
+              <motion.span
+                key={`${char}-${i}`}
+                variants={nameChar}
+                className="inline-block"
+              >
+                {char === " " ? "\u00A0" : char}
+              </motion.span>
+            ))}
+          </motion.h1>
+        </motion.div>
         <motion.p
           custom={0.75}
           initial="hidden"
           animate={loading ? "hidden" : "visible"}
           variants={fadeUp}
-          className="text-lg md:text-xl text-muted-foreground font-body font-light max-w-lg leading-relaxed"
+          className="relative z-10 text-lg md:text-xl text-muted-foreground font-body font-light max-w-lg leading-relaxed"
         >
           {t.hero.tagline}
         </motion.p>

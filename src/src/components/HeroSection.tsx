@@ -13,7 +13,7 @@ import { useState, useEffect, useRef } from "react";
 const ease: Easing = "easeOut";
 
 const DEFAULT_SHADOW = { x: 0, y: 8 };
-const SHADOW_RANGE = 100;
+const SHADOW_RANGE = 300;
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 30 },

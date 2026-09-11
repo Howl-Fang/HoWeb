@@ -1,3 +1,9 @@
+if [ -n "$(git status --short)" ]; then
+    echo "Error: Uncommitted changes detected. Exiting..."
+    exit 1
+fi
+echo "No uncommitted changes. Continuing..."
+
 git switch __cloudflare__
 git checkout __main__ -- src
 git add --all

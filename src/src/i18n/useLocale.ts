@@ -7,7 +7,10 @@ export function useLocale() {
     return lang.startsWith("zh") ? "zh" : "en";
   });
 
-  document.title = locale === "zh" ? "汤圆圆" : "Howl Fang";
+  useEffect(() => {
+    document.title = locale === "zh" ? "汤圆圆" : "Howl Fang";
+  }, [locale]);
+
   const t = translations[locale];
 
   const toggleLocale = useCallback(() => {

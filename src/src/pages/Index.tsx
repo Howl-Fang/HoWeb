@@ -80,7 +80,7 @@ function Index() {
       </AnimatePresence>
       <div className="min-h-screen bg-background">
         <NavBar t={t} locale={locale} toggleLocale={toggleLocale} />
-        <HeroSection t={t} />
+        <HeroSection t={t} loading={loading} />
         <AboutSection t={t} />
         <ProjectsSection t={t} locale={locale} />
         <ContactSection t={t} />

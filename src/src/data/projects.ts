@@ -46,6 +46,19 @@ export const projects: Project[] = [
 
   },
   {
+    id: "project-3",
+    title: {
+      en: "Pathology-Image-Classification",
+      zh: "病理图像分类",
+    },
+    description: {
+      en: "A project for classifying pathology images using deep learning techniques. Using Virchow2 and MIL.",
+      zh: "一个使用深度学习技术对病理图像进行分类的项目。使用 Virchow2 和 MIL。",
+    },
+    tags: ["Python", "Deep Learning", "Computer Vision"],
+    github: "https://github.com/Howl-Fang/Pathology-Image-Classifications",
+  },
+  {
     id: "project-4",
     title: {
       en: "Disable AWDL",
@@ -59,7 +72,7 @@ export const projects: Project[] = [
     github: "https://github.com/Howl-Fang/Disable-AWDL-for-Moonlight-Streaming-on-Mac",
   },
   {
-    id: "project-5",
+    id: "project-10",
     title: {
       en: "COMP2012H",
       zh: "COMP2012H",
@@ -72,7 +85,7 @@ export const projects: Project[] = [
     github: "https://github.com/Howl-Fang/COMP2012H",
   },
   {
-    id: "project-6",
+    id: "project-11",
     title: {
       en: "Mix-m4s-from-bilibili-cache",
       zh: "从 B 站缓存混合 m4s",

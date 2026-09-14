@@ -8,8 +8,8 @@ interface ParticlePatternProps {
 
 const SPRING = 0.018;
 const FRICTION = 0.855;
-const REPEL_RADIUS = 18;
-const REPEL_FORCE = 3;
+const REPEL_FORCE = 2.5;
+const REPEL_FALLOFF = 18;
 const MAX_VELOCITY = 10;
 const NOISE_AMPLITUDE = 0.9;
 const MAX_PARTICLES = 3000;
@@ -211,9 +211,10 @@ const ParticlePattern = ({ active, className }: ParticlePatternProps) => {
             const dy = y - pointerY;
             const distanceSq = dx * dx + dy * dy;
 
-            if (distanceSq < REPEL_RADIUS * REPEL_RADIUS && distanceSq > 0.0001) {
+            if (distanceSq > 0.0001) {
               const distance = Math.sqrt(distanceSq);
-              const force = (1 - distance / REPEL_RADIUS) * REPEL_FORCE * delta;
+              const falloff = 1 + distance / REPEL_FALLOFF;
+              const force = (REPEL_FORCE / (falloff * falloff)) * delta;
               velocityX += (dx / distance) * force;
               velocityY += (dy / distance) * force;
             }

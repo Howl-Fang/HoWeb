@@ -226,7 +226,11 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
                        [text-shadow:var(--shadow-x)_var(--shadow-y)_10px_rgba(0,0,0,0.3),var(--shadow-x2)_var(--shadow-y2)_20px_rgba(0,0,0,0.2),var(--shadow-x3)_var(--shadow-y3)_30px_rgba(0,0,0,0.1)]
                        dark:[text-shadow:var(--shadow-x)_var(--shadow-y)_10px_rgba(255,255,255,0.15),var(--shadow-x2)_var(--shadow-y2)_20px_rgba(255,255,255,0.1),var(--shadow-x3)_var(--shadow-y3)_30px_rgba(255,255,255,0.05),var(--shadow-x)_var(--shadow-y)_8px_rgba(0,0,0,0.4)]"
           >
-            {t.hero.name}
+            {Array.from(t.hero.name).map((char, i) => (
+              <span key={`shadow-${char}-${i}`} className="inline-block">
+                {char === " " ? "\u00A0" : char}
+              </span>
+            ))}
           </motion.span>
           <motion.h1
             initial="hidden"

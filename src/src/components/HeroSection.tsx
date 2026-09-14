@@ -9,6 +9,8 @@ import {
 } from "framer-motion";
 import type { Translations } from "@/i18n/translations";
 import { useState, useEffect, useRef } from "react";
+import ParticlePattern from "./ParticlePattern";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 const ease: Easing = "easeOut";
 
@@ -53,6 +55,7 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
     /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
   );
   const nameRef = useRef<HTMLDivElement>(null);
+  const isWideLandscape = useMediaQuery("(orientation: landscape) and (min-width: 1280px)");
 
   const targetX = useMotionValue(DEFAULT_SHADOW.x);
   const targetY = useMotionValue(DEFAULT_SHADOW.y);
@@ -196,8 +199,14 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
   }, [isMobile, targetX, targetY, targetTiltX, targetTiltY]);
 
   return (
-    <section className="min-h-screen flex flex-col justify-center section-padding pt-32">
-      <div className="max-w-2xl">
+    <section className="relative flex min-h-screen flex-col justify-center overflow-hidden section-padding pt-32">
+      {isWideLandscape && (
+        <ParticlePattern
+          active={!loading}
+          className="absolute right-[5%] top-1/2 aspect-square h-[min(62vh,480px)] -translate-y-1/2"
+        />
+      )}
+      <div className="relative z-10 max-w-2xl">
         <motion.p
           custom={0.05}
           initial="hidden"
@@ -215,8 +224,14 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
             rotateY: tiltY,
             transformPerspective: 800,
           }}
-          className="relative w-fit max-w-full text-5xl md:text-7xl lg:text-8xl font-display leading-tight mb-6"
+          className="relative isolate w-fit max-w-full text-5xl md:text-7xl lg:text-8xl font-display leading-tight mb-6"
         >
+          {!isWideLandscape && (
+            <ParticlePattern
+              active={!loading}
+              className="absolute left-1/2 top-1/2 -z-10 aspect-square w-[min(92vw,58vh)] -translate-x-1/2 -translate-y-1/2"
+            />
+          )}
           <motion.span
             aria-hidden="true"
             initial={{ opacity: 0 }}

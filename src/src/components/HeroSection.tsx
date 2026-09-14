@@ -262,7 +262,7 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
           {!isWideLandscape && (
             <ParticlePattern
               active={!loading}
-              className="absolute right-0 top-1/2 -z-10 aspect-square w-[min(92vw,58vh)] translate-x-1/2 -translate-y-1/2"
+              className="absolute right-0 top-1/2 -z-10 aspect-square w-[min(115vw,70vh)] translate-x-1/2 -translate-y-1/2"
             />
           )}
         </div>

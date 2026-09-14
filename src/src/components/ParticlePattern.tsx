@@ -9,7 +9,7 @@ interface ParticlePatternProps {
 const SPRING = 0.018;
 const FRICTION = 0.855;
 const REPEL_FORCE = 2.5;
-const REPEL_FALLOFF = 18;
+const REPEL_FALLOFF = 12;
 const MAX_VELOCITY = 10;
 const NOISE_AMPLITUDE = 0.9;
 const MAX_PARTICLES = 3000;

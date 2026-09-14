@@ -5,6 +5,7 @@ fi
 echo "No uncommitted changes. Continuing..."
 
 git switch __cloudflare__
+git pull
 git checkout __main__ -- src
 git add --all
 git commit -m 'Sync from __main__ branch'

@@ -216,54 +216,56 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
         >
           {t.hero.greeting}
         </motion.p>
-        <motion.div
-          ref={nameRef}
-          style={{
-            ...shadowVars,
-            rotateX: tiltX,
-            rotateY: tiltY,
-            transformPerspective: 800,
-          }}
-          className="relative isolate w-fit max-w-full text-5xl md:text-7xl lg:text-8xl font-display leading-tight mb-6"
-        >
+        <div className="relative">
+          <motion.div
+            ref={nameRef}
+            style={{
+              ...shadowVars,
+              rotateX: tiltX,
+              rotateY: tiltY,
+              transformPerspective: 800,
+            }}
+            className="relative w-fit max-w-full text-5xl md:text-7xl lg:text-8xl font-display leading-tight mb-6"
+          >
+            <motion.span
+              aria-hidden="true"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: loading ? 0 : 1 }}
+              transition={{ delay: 0.3, duration: 0.8, ease }}
+              className="absolute inset-0 block text-transparent
+                         [text-shadow:var(--shadow-x)_var(--shadow-y)_10px_rgba(0,0,0,0.3),var(--shadow-x2)_var(--shadow-y2)_20px_rgba(0,0,0,0.2),var(--shadow-x3)_var(--shadow-y3)_30px_rgba(0,0,0,0.1)]
+                         dark:[text-shadow:var(--shadow-x)_var(--shadow-y)_10px_rgba(255,255,255,0.15),var(--shadow-x2)_var(--shadow-y2)_20px_rgba(255,255,255,0.1),var(--shadow-x3)_var(--shadow-y3)_30px_rgba(255,255,255,0.05),var(--shadow-x)_var(--shadow-y)_8px_rgba(0,0,0,0.4)]"
+            >
+              {Array.from(t.hero.name).map((char, i) => (
+                <span key={`shadow-${char}-${i}`} className="inline-block">
+                  {char === " " ? "\u00A0" : char}
+                </span>
+              ))}
+            </motion.span>
+            <motion.h1
+              initial="hidden"
+              animate={loading ? "hidden" : "visible"}
+              variants={nameContainer}
+              className="relative text-foreground"
+            >
+              {Array.from(t.hero.name).map((char, i) => (
+                <motion.span
+                  key={`${char}-${i}`}
+                  variants={nameChar}
+                  className="inline-block"
+                >
+                  {char === " " ? "\u00A0" : char}
+                </motion.span>
+              ))}
+            </motion.h1>
+          </motion.div>
           {!isWideLandscape && (
             <ParticlePattern
               active={!loading}
-              className="absolute left-1/2 top-1/2 -z-10 aspect-square w-[min(92vw,58vh)] -translate-x-1/2 -translate-y-1/2"
+              className="absolute right-0 top-1/2 -z-10 aspect-square w-[min(92vw,58vh)] translate-x-1/2 -translate-y-1/2"
             />
           )}
-          <motion.span
-            aria-hidden="true"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: loading ? 0 : 1 }}
-            transition={{ delay: 0.3, duration: 0.8, ease }}
-            className="absolute inset-0 block text-transparent
-                       [text-shadow:var(--shadow-x)_var(--shadow-y)_10px_rgba(0,0,0,0.3),var(--shadow-x2)_var(--shadow-y2)_20px_rgba(0,0,0,0.2),var(--shadow-x3)_var(--shadow-y3)_30px_rgba(0,0,0,0.1)]
-                       dark:[text-shadow:var(--shadow-x)_var(--shadow-y)_10px_rgba(255,255,255,0.15),var(--shadow-x2)_var(--shadow-y2)_20px_rgba(255,255,255,0.1),var(--shadow-x3)_var(--shadow-y3)_30px_rgba(255,255,255,0.05),var(--shadow-x)_var(--shadow-y)_8px_rgba(0,0,0,0.4)]"
-          >
-            {Array.from(t.hero.name).map((char, i) => (
-              <span key={`shadow-${char}-${i}`} className="inline-block">
-                {char === " " ? "\u00A0" : char}
-              </span>
-            ))}
-          </motion.span>
-          <motion.h1
-            initial="hidden"
-            animate={loading ? "hidden" : "visible"}
-            variants={nameContainer}
-            className="relative text-foreground"
-          >
-            {Array.from(t.hero.name).map((char, i) => (
-              <motion.span
-                key={`${char}-${i}`}
-                variants={nameChar}
-                className="inline-block"
-              >
-                {char === " " ? "\u00A0" : char}
-              </motion.span>
-            ))}
-          </motion.h1>
-        </motion.div>
+        </div>
         <motion.p
           custom={0.75}
           initial="hidden"

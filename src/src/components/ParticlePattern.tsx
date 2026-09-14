@@ -6,10 +6,13 @@ interface ParticlePatternProps {
   className?: string;
 }
 
-const SPRING = 0.05;
-const FRICTION = 0.87;
-const REPEL_RADIUS = 160;
-const REPEL_FORCE = 14;
+const SPRING = 0.018;
+const FRICTION = 0.855;
+const REPEL_RADIUS = 90;
+const REPEL_FORCE = 4.5;
+const BOUNDARY_MARGIN = 12;
+const BOUNDARY_SPRING = 0.3;
+const MAX_VELOCITY = 10;
 const NOISE_AMPLITUDE = 0.9;
 const MAX_PARTICLES = 3000;
 const SAMPLE_STEPS = [3, 4, 5, 6, 8, 10];
@@ -218,12 +221,26 @@ const ParticlePattern = ({ active, className }: ParticlePatternProps) => {
           velocityX += (targetsX[i] + noiseX - x) * SPRING * delta;
           velocityY += (targetsY[i] + noiseY - y) * SPRING * delta;
 
+          if (x < BOUNDARY_MARGIN) {
+            velocityX += (BOUNDARY_MARGIN - x) * BOUNDARY_SPRING * delta;
+          } else if (x > width - BOUNDARY_MARGIN) {
+            velocityX += (width - BOUNDARY_MARGIN - x) * BOUNDARY_SPRING * delta;
+          }
+          if (y < BOUNDARY_MARGIN) {
+            velocityY += (BOUNDARY_MARGIN - y) * BOUNDARY_SPRING * delta;
+          } else if (y > height - BOUNDARY_MARGIN) {
+            velocityY += (height - BOUNDARY_MARGIN - y) * BOUNDARY_SPRING * delta;
+          }
+
+          velocityX = Math.max(-MAX_VELOCITY, Math.min(MAX_VELOCITY, velocityX));
+          velocityY = Math.max(-MAX_VELOCITY, Math.min(MAX_VELOCITY, velocityY));
+
           const friction = Math.pow(FRICTION, delta);
           velocityX *= friction;
           velocityY *= friction;
 
-          positionsX[i] = x + velocityX * delta;
-          positionsY[i] = y + velocityY * delta;
+          positionsX[i] = Math.min(width, Math.max(0, x + velocityX * delta));
+          positionsY[i] = Math.min(height, Math.max(0, y + velocityY * delta));
           velocitiesX[i] = velocityX;
           velocitiesY[i] = velocityY;
         }

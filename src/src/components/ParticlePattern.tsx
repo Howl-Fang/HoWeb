@@ -8,13 +8,12 @@ interface ParticlePatternProps {
 
 const SPRING = 0.018;
 const FRICTION = 0.855;
-const REPEL_RADIUS = 90;
-const REPEL_FORCE = 4.5;
-const BOUNDARY_MARGIN = 12;
-const BOUNDARY_SPRING = 0.3;
+const REPEL_RADIUS = 18;
+const REPEL_FORCE = 3;
 const MAX_VELOCITY = 10;
 const NOISE_AMPLITUDE = 0.9;
 const MAX_PARTICLES = 3000;
+const CANVAS_PADDING_RATIO = 0.25;
 const SAMPLE_STEPS = [3, 4, 5, 6, 8, 10];
 const PARTICLE_ALPHA = 0.4;
 
@@ -54,6 +53,7 @@ const ParticlePattern = ({ active, className }: ParticlePatternProps) => {
 
     let width = 0;
     let height = 0;
+    let patternSize = 0;
     let dpr = 1;
     let color = readParticleColor();
 
@@ -93,9 +93,9 @@ const ParticlePattern = ({ active, className }: ParticlePatternProps) => {
     };
 
     const samplePattern = () => {
-      if (!image || width <= 0 || height <= 0) return;
+      if (!image || width <= 0 || height <= 0 || patternSize <= 0) return;
 
-      const size = Math.floor(Math.min(width, height));
+      const size = Math.floor(patternSize);
       if (size <= 0) return;
 
       const offscreen = document.createElement("canvas");
@@ -170,8 +170,13 @@ const ParticlePattern = ({ active, className }: ParticlePatternProps) => {
 
     const resize = () => {
       const rect = container.getBoundingClientRect();
-      width = Math.max(1, rect.width);
-      height = Math.max(1, rect.height);
+      const baseWidth = Math.max(1, rect.width);
+      const baseHeight = Math.max(1, rect.height);
+      patternSize = Math.min(baseWidth, baseHeight);
+      const padding = Math.round(patternSize * CANVAS_PADDING_RATIO);
+
+      width = baseWidth + padding * 2;
+      height = baseHeight + padding * 2;
       dpr = Math.min(window.devicePixelRatio || 1, 2);
 
       canvas.width = Math.round(width * dpr);
@@ -221,17 +226,6 @@ const ParticlePattern = ({ active, className }: ParticlePatternProps) => {
           velocityX += (targetsX[i] + noiseX - x) * SPRING * delta;
           velocityY += (targetsY[i] + noiseY - y) * SPRING * delta;
 
-          if (x < BOUNDARY_MARGIN) {
-            velocityX += (BOUNDARY_MARGIN - x) * BOUNDARY_SPRING * delta;
-          } else if (x > width - BOUNDARY_MARGIN) {
-            velocityX += (width - BOUNDARY_MARGIN - x) * BOUNDARY_SPRING * delta;
-          }
-          if (y < BOUNDARY_MARGIN) {
-            velocityY += (BOUNDARY_MARGIN - y) * BOUNDARY_SPRING * delta;
-          } else if (y > height - BOUNDARY_MARGIN) {
-            velocityY += (height - BOUNDARY_MARGIN - y) * BOUNDARY_SPRING * delta;
-          }
-
           velocityX = Math.max(-MAX_VELOCITY, Math.min(MAX_VELOCITY, velocityX));
           velocityY = Math.max(-MAX_VELOCITY, Math.min(MAX_VELOCITY, velocityY));
 
@@ -239,8 +233,8 @@ const ParticlePattern = ({ active, className }: ParticlePatternProps) => {
           velocityX *= friction;
           velocityY *= friction;
 
-          positionsX[i] = Math.min(width, Math.max(0, x + velocityX * delta));
-          positionsY[i] = Math.min(height, Math.max(0, y + velocityY * delta));
+          positionsX[i] = x + velocityX * delta;
+          positionsY[i] = y + velocityY * delta;
           velocitiesX[i] = velocityX;
           velocitiesY[i] = velocityY;
         }
@@ -319,7 +313,10 @@ const ParticlePattern = ({ active, className }: ParticlePatternProps) => {
         active ? "opacity-100" : "opacity-0"
       } ${className ?? ""}`}
     >
-      <canvas ref={canvasRef} className="block h-full w-full" />
+      <canvas
+        ref={canvasRef}
+        className="absolute left-1/2 top-1/2 block -translate-x-1/2 -translate-y-1/2"
+      />
     </div>
   );
 };

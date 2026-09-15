@@ -17,7 +17,7 @@ function Index() {
     target: contentRef,
     offset: ["start end", "start start"],
   });
-  const contentOpacity = useTransform(scrollYProgress, [0, 1], [0.35, 1]);
+  const veilOpacity = useTransform(scrollYProgress, [0, 0.5], [0, 1]);
 
   useEffect(() => {
     // 最少显示时长（毫秒）
@@ -90,15 +90,15 @@ function Index() {
           <HeroSection t={t} loading={loading} />
         </div>
         <motion.div
-          ref={contentRef}
-          style={{ opacity: contentOpacity }}
-          className="relative z-10 bg-background"
-        >
+          style={{ opacity: veilOpacity }}
+          className="pointer-events-none fixed inset-0 z-[5] bg-background"
+        />
+        <div ref={contentRef} className="relative z-10 bg-background">
           <AboutSection t={t} />
           <ProjectsSection t={t} locale={locale} />
           <ContactSection t={t} />
           <Footer t={t} />
-        </motion.div>
+        </div>
       </div>
     </>
   );

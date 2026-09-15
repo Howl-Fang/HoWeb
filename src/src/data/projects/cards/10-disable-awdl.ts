@@ -1,7 +1,7 @@
 import type { Project } from "../types";
 
 export default {
-  id: "project-4",
+  id: "project-awdl",
   title: {
     en: "Disable AWDL",
     zh: "禁用 AWDL",

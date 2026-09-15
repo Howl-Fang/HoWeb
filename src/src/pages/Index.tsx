@@ -17,7 +17,7 @@ function Index() {
     target: contentRef,
     offset: ["start end", "start start"],
   });
-  const heroOpacity = useTransform(scrollYProgress, [0, 1], [1, 0]);
+  const contentOpacity = useTransform(scrollYProgress, [0, 1], [0.35, 1]);
 
   useEffect(() => {
     // 最少显示时长（毫秒）
@@ -86,15 +86,19 @@ function Index() {
       </AnimatePresence>
       <div className="relative min-h-screen bg-background">
         <NavBar t={t} locale={locale} toggleLocale={toggleLocale} />
-        <motion.div style={{ opacity: heroOpacity }} className="sticky top-0 z-0 h-screen">
+        <div className="sticky top-0 z-0 h-screen">
           <HeroSection t={t} loading={loading} />
-        </motion.div>
-        <div ref={contentRef} className="relative z-10 bg-background">
+        </div>
+        <motion.div
+          ref={contentRef}
+          style={{ opacity: contentOpacity }}
+          className="relative z-10 bg-background"
+        >
           <AboutSection t={t} />
           <ProjectsSection t={t} locale={locale} />
           <ContactSection t={t} />
           <Footer t={t} />
-        </div>
+        </motion.div>
       </div>
     </>
   );

@@ -6,18 +6,12 @@ import ProjectsSection from "@/components/ProjectsSection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 
-import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
-import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from "react";
 
 function Index() {
   const [loading, setLoading] = useState(true);
   const { locale, t, toggleLocale } = useLocale();
-  const contentRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: contentRef,
-    offset: ["start end", "start start"],
-  });
-  const veilOpacity = useTransform(scrollYProgress, [0, 0.5], [0, 1]);
 
   useEffect(() => {
     // 最少显示时长（毫秒）
@@ -89,11 +83,11 @@ function Index() {
         <div className="sticky top-0 z-0 h-screen">
           <HeroSection t={t} loading={loading} />
         </div>
-        <motion.div
-          style={{ opacity: veilOpacity }}
-          className="pointer-events-none fixed inset-0 z-[5] bg-background"
-        />
-        <div ref={contentRef} className="relative z-10 bg-background">
+        <div className="relative z-10 bg-background">
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute bottom-full left-0 h-40 w-full bg-gradient-to-t from-background to-transparent"
+          />
           <AboutSection t={t} />
           <ProjectsSection t={t} locale={locale} />
           <ContactSection t={t} />

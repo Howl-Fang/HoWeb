@@ -8,7 +8,9 @@ import {
   type MotionStyle,
 } from "framer-motion";
 import type { Translations } from "@/i18n/translations";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useLayoutEffect, useRef } from "react";
+import ParticlePattern from "./ParticlePattern";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 const ease: Easing = "easeOut";
 
@@ -44,6 +46,18 @@ const nameChar: Variants = {
   },
 };
 
+const shadowChar: Variants = {
+  hidden: {
+    opacity: 0,
+    y: "0.45em",
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.65, ease },
+  },
+};
+
 type DeviceOrientationEventWithPermission = typeof DeviceOrientationEvent & {
   requestPermission?: () => Promise<"granted" | "denied">;
 };
@@ -53,6 +67,7 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
     /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
   );
   const nameRef = useRef<HTMLDivElement>(null);
+  const isLandscape = useMediaQuery("(orientation: landscape)");
 
   const targetX = useMotionValue(DEFAULT_SHADOW.x);
   const targetY = useMotionValue(DEFAULT_SHADOW.y);
@@ -195,9 +210,45 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
     };
   }, [isMobile, targetX, targetY, targetTiltX, targetTiltY]);
 
+  useLayoutEffect(() => {
+    const element = nameRef.current;
+    const parent = element?.parentElement;
+    if (!element || !parent) return;
+
+    const fit = () => {
+      element.style.fontSize = "";
+      const available = parent.clientWidth;
+      if (!available) return;
+
+      const natural = element.scrollWidth;
+      if (natural > available) {
+        const base = parseFloat(getComputedStyle(element).fontSize);
+        element.style.fontSize = `${base * (available / natural)}px`;
+      }
+    };
+
+    fit();
+    const observer = new ResizeObserver(fit);
+    observer.observe(parent);
+    document.fonts?.ready.then(fit).catch(() => {});
+
+    return () => observer.disconnect();
+  }, [isLandscape, t.hero.name]);
+
   return (
-    <section className="min-h-screen flex flex-col justify-center section-padding pt-32">
-      <div className="max-w-2xl">
+    <section className="relative isolate flex min-h-screen flex-col justify-center overflow-hidden section-padding pt-32">
+      {isLandscape ? (
+        <ParticlePattern
+          active={!loading}
+          className="absolute right-[20%] bottom-[30%] -z-10 aspect-square w-[min(130vh,80vw,1150px)] translate-x-1/2 translate-y-1/2"
+        />
+      ) : (
+        <ParticlePattern
+          active={!loading}
+          className="absolute right-0 top-1/2 -z-10 aspect-square w-[min(115vw,70vh)] translate-x-1/2 -translate-y-1/2"
+        />
+      )}
+      <div className="relative z-10 max-w-2xl">
         <motion.p
           custom={0.05}
           initial="hidden"
@@ -207,44 +258,58 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
         >
           {t.hero.greeting}
         </motion.p>
-        <motion.div
-          ref={nameRef}
-          style={{
-            ...shadowVars,
-            rotateX: tiltX,
-            rotateY: tiltY,
-            transformPerspective: 800,
-          }}
-          className="relative w-fit max-w-full text-5xl md:text-7xl lg:text-8xl font-display leading-tight mb-6"
-        >
-          <motion.span
-            aria-hidden="true"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: loading ? 0 : 1 }}
-            transition={{ delay: 0.3, duration: 0.8, ease }}
-            className="absolute inset-0 block text-transparent
-                       [text-shadow:var(--shadow-x)_var(--shadow-y)_10px_rgba(0,0,0,0.3),var(--shadow-x2)_var(--shadow-y2)_20px_rgba(0,0,0,0.2),var(--shadow-x3)_var(--shadow-y3)_30px_rgba(0,0,0,0.1)]
-                       dark:[text-shadow:var(--shadow-x)_var(--shadow-y)_10px_rgba(255,255,255,0.15),var(--shadow-x2)_var(--shadow-y2)_20px_rgba(255,255,255,0.1),var(--shadow-x3)_var(--shadow-y3)_30px_rgba(255,255,255,0.05),var(--shadow-x)_var(--shadow-y)_8px_rgba(0,0,0,0.4)]"
+        <div className="relative">
+          <motion.div
+            ref={nameRef}
+            style={{
+              ...shadowVars,
+              rotateX: tiltX,
+              rotateY: tiltY,
+              transformPerspective: 800,
+            }}
+            className={`relative w-fit max-w-full whitespace-nowrap font-display leading-tight mb-6 ${
+              isLandscape
+                ? "text-5xl md:text-7xl lg:text-8xl"
+                : "text-[4.5rem] md:text-[6.75rem] lg:text-[9rem]"
+            }`}
           >
-            {t.hero.name}
-          </motion.span>
-          <motion.h1
-            initial="hidden"
-            animate={loading ? "hidden" : "visible"}
-            variants={nameContainer}
-            className="relative text-foreground"
-          >
-            {Array.from(t.hero.name).map((char, i) => (
-              <motion.span
-                key={`${char}-${i}`}
-                variants={nameChar}
-                className="inline-block"
-              >
-                {char === " " ? "\u00A0" : char}
-              </motion.span>
-            ))}
-          </motion.h1>
-        </motion.div>
+            <motion.span
+              aria-hidden="true"
+              initial="hidden"
+              animate={loading ? "hidden" : "visible"}
+              variants={nameContainer}
+              className="absolute inset-0 block text-transparent
+                         [text-shadow:var(--shadow-x)_var(--shadow-y)_10px_rgba(0,0,0,0.3),var(--shadow-x2)_var(--shadow-y2)_20px_rgba(0,0,0,0.2),var(--shadow-x3)_var(--shadow-y3)_30px_rgba(0,0,0,0.1)]
+                         dark:[text-shadow:var(--shadow-x)_var(--shadow-y)_10px_rgba(255,255,255,0.15),var(--shadow-x2)_var(--shadow-y2)_20px_rgba(255,255,255,0.1),var(--shadow-x3)_var(--shadow-y3)_30px_rgba(255,255,255,0.05),var(--shadow-x)_var(--shadow-y)_8px_rgba(0,0,0,0.4)]"
+            >
+              {Array.from(t.hero.name).map((char, i) => (
+                <motion.span
+                  key={`shadow-${char}-${i}`}
+                  variants={shadowChar}
+                  className="inline-block"
+                >
+                  {char === " " ? "\u00A0" : char}
+                </motion.span>
+              ))}
+            </motion.span>
+            <motion.h1
+              initial="hidden"
+              animate={loading ? "hidden" : "visible"}
+              variants={nameContainer}
+              className="relative text-foreground"
+            >
+              {Array.from(t.hero.name).map((char, i) => (
+                <motion.span
+                  key={`${char}-${i}`}
+                  variants={nameChar}
+                  className="inline-block"
+                >
+                  {char === " " ? "\u00A0" : char}
+                </motion.span>
+              ))}
+            </motion.h1>
+          </motion.div>
+        </div>
         <motion.p
           custom={0.75}
           initial="hidden"

@@ -78,13 +78,21 @@ function Index() {
           </motion.div>
         )}
       </AnimatePresence>
-      <div className="min-h-screen bg-background">
+      <div className="relative min-h-screen bg-background">
         <NavBar t={t} locale={locale} toggleLocale={toggleLocale} />
-        <HeroSection t={t} loading={loading} />
-        <AboutSection t={t} />
-        <ProjectsSection t={t} locale={locale} />
-        <ContactSection t={t} />
-        <Footer t={t} />
+        <div className="sticky top-0 z-0 h-screen">
+          <HeroSection t={t} loading={loading} />
+        </div>
+        <div className="relative z-10 bg-background">
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute bottom-full left-0 h-40 w-full bg-gradient-to-t from-background to-transparent"
+          />
+          <AboutSection t={t} />
+          <ProjectsSection t={t} locale={locale} />
+          <ContactSection t={t} />
+          <Footer t={t} />
+        </div>
       </div>
     </>
   );

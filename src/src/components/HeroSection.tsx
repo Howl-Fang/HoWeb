@@ -199,11 +199,16 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
   }, [isMobile, targetX, targetY, targetTiltX, targetTiltY]);
 
   return (
-    <section className="relative flex min-h-screen flex-col justify-center overflow-hidden section-padding pt-32">
-      {isWideLandscape && (
+    <section className="relative isolate flex min-h-screen flex-col justify-center overflow-hidden section-padding pt-32">
+      {isWideLandscape ? (
         <ParticlePattern
           active={!loading}
           className="absolute right-[5%] top-1/2 aspect-square h-[min(62vh,480px)] -translate-y-1/2"
+        />
+      ) : (
+        <ParticlePattern
+          active={!loading}
+          className="absolute right-0 top-1/2 -z-10 aspect-square w-[min(115vw,70vh)] translate-x-1/2 -translate-y-1/2"
         />
       )}
       <div className="relative z-10 max-w-2xl">
@@ -259,12 +264,6 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
               ))}
             </motion.h1>
           </motion.div>
-          {!isWideLandscape && (
-            <ParticlePattern
-              active={!loading}
-              className="absolute right-0 top-1/2 -z-10 aspect-square w-[min(115vw,70vh)] translate-x-1/2 -translate-y-1/2"
-            />
-          )}
         </div>
         <motion.p
           custom={0.75}

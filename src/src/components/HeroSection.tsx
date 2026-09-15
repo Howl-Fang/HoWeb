@@ -55,7 +55,7 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
     /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
   );
   const nameRef = useRef<HTMLDivElement>(null);
-  const isWideLandscape = useMediaQuery("(orientation: landscape) and (min-width: 1280px)");
+  const isLandscape = useMediaQuery("(orientation: landscape)");
 
   const targetX = useMotionValue(DEFAULT_SHADOW.x);
   const targetY = useMotionValue(DEFAULT_SHADOW.y);
@@ -200,10 +200,10 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
 
   return (
     <section className="relative isolate flex min-h-screen flex-col justify-center overflow-hidden section-padding pt-32">
-      {isWideLandscape ? (
+      {isLandscape ? (
         <ParticlePattern
           active={!loading}
-          className="absolute right-[5%] top-1/2 aspect-square h-[min(62vh,480px)] -translate-y-1/2"
+          className="absolute bottom-0 right-0 -z-10 aspect-square w-[min(115vh,70vw,1000px)] translate-x-1/2 translate-y-1/2"
         />
       ) : (
         <ParticlePattern
@@ -230,7 +230,11 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
               rotateY: tiltY,
               transformPerspective: 800,
             }}
-            className="relative w-fit max-w-full text-5xl md:text-7xl lg:text-8xl font-display leading-tight mb-6"
+            className={`relative w-fit max-w-full font-display leading-tight mb-6 ${
+              isLandscape
+                ? "text-5xl md:text-7xl lg:text-8xl"
+                : "text-[4.5rem] md:text-[6.75rem] lg:text-[9rem]"
+            }`}
           >
             <motion.span
               aria-hidden="true"

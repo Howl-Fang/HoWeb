@@ -17,7 +17,7 @@ function Index() {
     target: contentRef,
     offset: ["start end", "start start"],
   });
-  const contentOpacity = useTransform(scrollYProgress, [0, 1], [0.35, 1]);
+  const contentOpacity = useTransform(scrollYProgress, [0, 0.2], [0.5, 1]);
 
   useEffect(() => {
     // 最少显示时长（毫秒）

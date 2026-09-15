@@ -8,7 +8,7 @@ import {
   type MotionStyle,
 } from "framer-motion";
 import type { Translations } from "@/i18n/translations";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import ParticlePattern from "./ParticlePattern";
 import { useMediaQuery } from "@/hooks/use-media-query";
 
@@ -198,12 +198,37 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
     };
   }, [isMobile, targetX, targetY, targetTiltX, targetTiltY]);
 
+  useLayoutEffect(() => {
+    const element = nameRef.current;
+    const parent = element?.parentElement;
+    if (!element || !parent) return;
+
+    const fit = () => {
+      element.style.fontSize = "";
+      const available = parent.clientWidth;
+      if (!available) return;
+
+      const natural = element.scrollWidth;
+      if (natural > available) {
+        const base = parseFloat(getComputedStyle(element).fontSize);
+        element.style.fontSize = `${base * (available / natural)}px`;
+      }
+    };
+
+    fit();
+    const observer = new ResizeObserver(fit);
+    observer.observe(parent);
+    document.fonts?.ready.then(fit).catch(() => {});
+
+    return () => observer.disconnect();
+  }, [isLandscape, t.hero.name]);
+
   return (
     <section className="relative isolate flex min-h-screen flex-col justify-center overflow-hidden section-padding pt-32">
       {isLandscape ? (
         <ParticlePattern
           active={!loading}
-          className="absolute bottom-0 right-0 -z-10 aspect-square w-[min(115vh,70vw,1000px)] translate-x-1/2 translate-y-1/2"
+          className="absolute right-[15%] bottom-[20%] -z-10 aspect-square w-[min(130vh,80vw,1150px)] translate-x-1/2 translate-y-1/2"
         />
       ) : (
         <ParticlePattern
@@ -230,7 +255,7 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
               rotateY: tiltY,
               transformPerspective: 800,
             }}
-            className={`relative w-fit max-w-full font-display leading-tight mb-6 ${
+            className={`relative w-fit max-w-full whitespace-nowrap font-display leading-tight mb-6 ${
               isLandscape
                 ? "text-5xl md:text-7xl lg:text-8xl"
                 : "text-[4.5rem] md:text-[6.75rem] lg:text-[9rem]"

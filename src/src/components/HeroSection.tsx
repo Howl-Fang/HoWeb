@@ -46,6 +46,18 @@ const nameChar: Variants = {
   },
 };
 
+const shadowChar: Variants = {
+  hidden: {
+    opacity: 0,
+    y: "0.45em",
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.65, ease },
+  },
+};
+
 type DeviceOrientationEventWithPermission = typeof DeviceOrientationEvent & {
   requestPermission?: () => Promise<"granted" | "denied">;
 };
@@ -263,17 +275,21 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
           >
             <motion.span
               aria-hidden="true"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: loading ? 0 : 1 }}
-              transition={{ delay: 0.3, duration: 0.8, ease }}
+              initial="hidden"
+              animate={loading ? "hidden" : "visible"}
+              variants={nameContainer}
               className="absolute inset-0 block text-transparent
                          [text-shadow:var(--shadow-x)_var(--shadow-y)_10px_rgba(0,0,0,0.3),var(--shadow-x2)_var(--shadow-y2)_20px_rgba(0,0,0,0.2),var(--shadow-x3)_var(--shadow-y3)_30px_rgba(0,0,0,0.1)]
                          dark:[text-shadow:var(--shadow-x)_var(--shadow-y)_10px_rgba(255,255,255,0.15),var(--shadow-x2)_var(--shadow-y2)_20px_rgba(255,255,255,0.1),var(--shadow-x3)_var(--shadow-y3)_30px_rgba(255,255,255,0.05),var(--shadow-x)_var(--shadow-y)_8px_rgba(0,0,0,0.4)]"
             >
               {Array.from(t.hero.name).map((char, i) => (
-                <span key={`shadow-${char}-${i}`} className="inline-block">
+                <motion.span
+                  key={`shadow-${char}-${i}`}
+                  variants={shadowChar}
+                  className="inline-block"
+                >
                   {char === " " ? "\u00A0" : char}
-                </span>
+                </motion.span>
               ))}
             </motion.span>
             <motion.h1

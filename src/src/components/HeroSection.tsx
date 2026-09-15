@@ -228,7 +228,7 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
       {isLandscape ? (
         <ParticlePattern
           active={!loading}
-          className="absolute right-[15%] bottom-[20%] -z-10 aspect-square w-[min(130vh,80vw,1150px)] translate-x-1/2 translate-y-1/2"
+          className="absolute right-[20%] bottom-[30%] -z-10 aspect-square w-[min(130vh,80vw,1150px)] translate-x-1/2 translate-y-1/2"
         />
       ) : (
         <ParticlePattern

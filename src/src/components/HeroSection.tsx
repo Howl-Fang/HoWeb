@@ -8,7 +8,7 @@ import {
   type MotionStyle,
 } from "framer-motion";
 import type { Translations } from "@/i18n/translations";
-import { useState, useEffect, useLayoutEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import ParticlePattern from "./ParticlePattern";
 import { useMediaQuery } from "@/hooks/use-media-query";
 
@@ -58,14 +58,7 @@ const shadowChar: Variants = {
   },
 };
 
-type DeviceOrientationEventWithPermission = typeof DeviceOrientationEvent & {
-  requestPermission?: () => Promise<"granted" | "denied">;
-};
-
 const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
-  const [isMobile, setIsMobile] = useState(() =>
-    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
-  );
   const nameRef = useRef<HTMLDivElement>(null);
   const isLandscape = useMediaQuery("(orientation: landscape)");
 
@@ -103,8 +96,18 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
       targetTiltY.set(0);
     };
 
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!nameRef.current) return;
+    // Unknown/empty pointerType means the browser cannot classify the pointer,
+    // so fall back to the capability media query
+    const supportsFinePointer = window.matchMedia("(pointer: fine)").matches;
+
+    const canUsePointer = (event: PointerEvent) => {
+      if (event.pointerType === "mouse" || event.pointerType === "pen") return true;
+      if (event.pointerType === "touch") return false;
+      return supportsFinePointer;
+    };
+
+    const handlePointerMove = (e: PointerEvent) => {
+      if (!canUsePointer(e) || !nameRef.current) return;
 
       const rect = nameRef.current.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
@@ -129,86 +132,26 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
       const nx = Math.max(-1, Math.min(1, (e.clientX - centerX) / (rect.width / 2)));
       const ny = Math.max(-1, Math.min(1, (e.clientY - centerY) / (rect.height / 2)));
 
-      // On the title the shadow tracks the mouse (centered at the text center),
+      // On the title the shadow tracks the pointer (centered at the text center),
       // off the title it settles back to the default position below the text
       targetX.set(-deltaX * influence);
       targetY.set(-deltaY * influence + DEFAULT_SHADOW.y * (1 - influence));
 
-      // Tilt the text slightly toward the mouse
+      // Tilt the text slightly toward the pointer
       targetTiltX.set(-ny * TILT_MAX * influence);
       targetTiltY.set(nx * TILT_MAX * influence);
     };
 
-    // Handle device orientation for mobile devices
-    const handleOrientation = (e: DeviceOrientationEvent) => {
-      if (e.gamma !== null && e.beta !== null) {
-        // gamma: left to right tilt (-90 to 90)
-        // beta: front to back tilt (-180 to 180)
-        // Normalize to reasonable range for shadow effect
-        const deltaX = (e.gamma / 90) * 30; // -30 to 30
-        const deltaY = ((e.beta - 45) / 90) * 30; // Adjust for typical holding angle
-
-        targetX.set(-deltaX);
-        targetY.set(-deltaY);
-      }
-    };
-
-    // Handle device motion as fallback
-    const handleMotion = (e: DeviceMotionEvent) => {
-      if (e.accelerationIncludingGravity) {
-        const { x, y } = e.accelerationIncludingGravity;
-        if (x !== null && y !== null) {
-          // Use gravity to determine tilt
-          // Normalize acceleration values (typically -10 to 10)
-          const deltaX = (x / 10) * 30;
-          const deltaY = (y / 10) * 30;
-
-          targetX.set(-deltaX);
-          targetY.set(-deltaY);
-        }
-      }
-    };
-
-    // Request permission for iOS 13+ devices
-    const requestPermission = async () => {
-      const OrientationEvent = DeviceOrientationEvent as DeviceOrientationEventWithPermission;
-      if (typeof OrientationEvent.requestPermission === "function") {
-        try {
-          const permission = await OrientationEvent.requestPermission();
-          if (permission === "granted") {
-            window.addEventListener("deviceorientation", handleOrientation);
-          }
-        } catch (error) {
-          console.log("Device orientation permission denied", error);
-        }
-      } else {
-        // Non-iOS 13+ devices
-        window.addEventListener("deviceorientation", handleOrientation);
-      }
-    };
-
-    if (isMobile) {
-      // Try to use device orientation
-      if (window.DeviceOrientationEvent) {
-        requestPermission();
-      } else if (window.DeviceMotionEvent) {
-        // Fallback to device motion
-        window.addEventListener("devicemotion", handleMotion);
-      }
-    } else {
-      window.addEventListener("mousemove", handleMouseMove, { passive: true });
-      document.documentElement.addEventListener("mouseleave", resetTargets);
-      window.addEventListener("blur", resetTargets);
-    }
+    window.addEventListener("pointermove", handlePointerMove, { passive: true });
+    document.documentElement.addEventListener("pointerleave", resetTargets);
+    window.addEventListener("blur", resetTargets);
 
     return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      document.documentElement.removeEventListener("mouseleave", resetTargets);
+      window.removeEventListener("pointermove", handlePointerMove);
+      document.documentElement.removeEventListener("pointerleave", resetTargets);
       window.removeEventListener("blur", resetTargets);
-      window.removeEventListener("deviceorientation", handleOrientation);
-      window.removeEventListener("devicemotion", handleMotion);
     };
-  }, [isMobile, targetX, targetY, targetTiltX, targetTiltY]);
+  }, [targetX, targetY, targetTiltX, targetTiltY]);
 
   useLayoutEffect(() => {
     const element = nameRef.current;

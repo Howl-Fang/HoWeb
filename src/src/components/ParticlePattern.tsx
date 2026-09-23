@@ -244,8 +244,16 @@ const ParticlePattern = ({ active, className }: ParticlePatternProps) => {
       draw();
     };
 
+    // Unknown/empty pointerType means the browser cannot classify the pointer,
+    // so fall back to the capability media query
+    const canUsePointer = (event: PointerEvent) => {
+      if (event.pointerType === "mouse" || event.pointerType === "pen") return true;
+      if (event.pointerType === "touch") return false;
+      return canInteract;
+    };
+
     const handlePointerMove = (event: PointerEvent) => {
-      if (!canInteract) return;
+      if (!canInteract || !canUsePointer(event)) return;
       const rect = canvas.getBoundingClientRect();
       pointerX = event.clientX - rect.left;
       pointerY = event.clientY - rect.top;
@@ -254,6 +262,11 @@ const ParticlePattern = ({ active, className }: ParticlePatternProps) => {
 
     const releasePointer = () => {
       pointerActive = false;
+    };
+
+    const handlePointerRelease = (event: PointerEvent) => {
+      if (event.pointerType === "mouse") return;
+      releasePointer();
     };
 
     const resizeObserver = new ResizeObserver(resize);
@@ -277,8 +290,10 @@ const ParticlePattern = ({ active, className }: ParticlePatternProps) => {
     });
 
     window.addEventListener("pointermove", handlePointerMove, { passive: true });
+    window.addEventListener("pointerup", handlePointerRelease);
+    window.addEventListener("pointercancel", handlePointerRelease);
     window.addEventListener("blur", releasePointer);
-    document.documentElement.addEventListener("mouseleave", releasePointer);
+    document.documentElement.addEventListener("pointerleave", releasePointer);
 
     const load = new Image();
     load.decoding = "async";
@@ -300,8 +315,10 @@ const ParticlePattern = ({ active, className }: ParticlePatternProps) => {
       visibilityObserver.disconnect();
       themeObserver.disconnect();
       window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerup", handlePointerRelease);
+      window.removeEventListener("pointercancel", handlePointerRelease);
       window.removeEventListener("blur", releasePointer);
-      document.documentElement.removeEventListener("mouseleave", releasePointer);
+      document.documentElement.removeEventListener("pointerleave", releasePointer);
       load.onload = null;
     };
   }, []);

@@ -96,8 +96,18 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
       targetTiltY.set(0);
     };
 
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!nameRef.current) return;
+    // Unknown/empty pointerType means the browser cannot classify the pointer,
+    // so fall back to the capability media query
+    const supportsFinePointer = window.matchMedia("(pointer: fine)").matches;
+
+    const canUsePointer = (event: PointerEvent) => {
+      if (event.pointerType === "mouse" || event.pointerType === "pen") return true;
+      if (event.pointerType === "touch") return false;
+      return supportsFinePointer;
+    };
+
+    const handlePointerMove = (e: PointerEvent) => {
+      if (!canUsePointer(e) || !nameRef.current) return;
 
       const rect = nameRef.current.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
@@ -122,23 +132,23 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
       const nx = Math.max(-1, Math.min(1, (e.clientX - centerX) / (rect.width / 2)));
       const ny = Math.max(-1, Math.min(1, (e.clientY - centerY) / (rect.height / 2)));
 
-      // On the title the shadow tracks the mouse (centered at the text center),
+      // On the title the shadow tracks the pointer (centered at the text center),
       // off the title it settles back to the default position below the text
       targetX.set(-deltaX * influence);
       targetY.set(-deltaY * influence + DEFAULT_SHADOW.y * (1 - influence));
 
-      // Tilt the text slightly toward the mouse
+      // Tilt the text slightly toward the pointer
       targetTiltX.set(-ny * TILT_MAX * influence);
       targetTiltY.set(nx * TILT_MAX * influence);
     };
 
-    window.addEventListener("mousemove", handleMouseMove, { passive: true });
-    document.documentElement.addEventListener("mouseleave", resetTargets);
+    window.addEventListener("pointermove", handlePointerMove, { passive: true });
+    document.documentElement.addEventListener("pointerleave", resetTargets);
     window.addEventListener("blur", resetTargets);
 
     return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      document.documentElement.removeEventListener("mouseleave", resetTargets);
+      window.removeEventListener("pointermove", handlePointerMove);
+      document.documentElement.removeEventListener("pointerleave", resetTargets);
       window.removeEventListener("blur", resetTargets);
     };
   }, [targetX, targetY, targetTiltX, targetTiltY]);

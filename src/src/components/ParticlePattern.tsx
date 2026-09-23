@@ -206,7 +206,7 @@ const ParticlePattern = ({ active, className }: ParticlePatternProps) => {
           let velocityX = velocitiesX[i];
           let velocityY = velocitiesY[i];
 
-          if (canInteract && pointerActive) {
+          if (pointerActive) {
             const dx = x - pointerX;
             const dy = y - pointerY;
             const distanceSq = dx * dx + dy * dy;
@@ -253,7 +253,7 @@ const ParticlePattern = ({ active, className }: ParticlePatternProps) => {
     };
 
     const handlePointerMove = (event: PointerEvent) => {
-      if (!canInteract || !canUsePointer(event)) return;
+      if (!canUsePointer(event)) return;
       const rect = canvas.getBoundingClientRect();
       pointerX = event.clientX - rect.left;
       pointerY = event.clientY - rect.top;

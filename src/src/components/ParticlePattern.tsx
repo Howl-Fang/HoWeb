@@ -78,6 +78,7 @@ const ParticlePattern = ({ active, className }: ParticlePatternProps) => {
 
     let visible = true;
     let rafId = 0;
+    let resampleTimer: number | undefined;
     let lastTime = 0;
     let elapsed = 0;
 
@@ -143,6 +144,13 @@ const ParticlePattern = ({ active, className }: ParticlePatternProps) => {
         pointsY = pickedY;
       }
 
+      const previousCount = particleCount;
+      const previousPositionsX = positionsX;
+      const previousPositionsY = positionsY;
+      const previousRadii = radii;
+      const previousPhases = phases;
+      const previousFrequencies = frequencies;
+
       particleCount = pointsX.length;
       positionsX = new Float32Array(particleCount);
       positionsY = new Float32Array(particleCount);
@@ -157,15 +165,22 @@ const ParticlePattern = ({ active, className }: ParticlePatternProps) => {
       for (let i = 0; i < particleCount; i++) {
         targetsX[i] = pointsX[i];
         targetsY[i] = pointsY[i];
-        positionsX[i] = reducedMotion
-          ? targetsX[i]
-          : offsetX + Math.random() * size;
-        positionsY[i] = reducedMotion
-          ? targetsY[i]
-          : offsetY + Math.random() * size;
-        radii[i] = 0.7 + Math.random() * 0.6;
-        phases[i] = Math.random() * Math.PI * 2;
-        frequencies[i] = 0.6 + Math.random() * 0.9;
+
+        if (i < previousCount && !reducedMotion) {
+          // Keep existing particles where they are and let the spring carry
+          // them to their new targets, so a re-sample does not scatter them
+          positionsX[i] = previousPositionsX[i];
+          positionsY[i] = previousPositionsY[i];
+          radii[i] = previousRadii[i];
+          phases[i] = previousPhases[i];
+          frequencies[i] = previousFrequencies[i];
+        } else {
+          positionsX[i] = reducedMotion ? targetsX[i] : offsetX + Math.random() * size;
+          positionsY[i] = reducedMotion ? targetsY[i] : offsetY + Math.random() * size;
+          radii[i] = 0.7 + Math.random() * 0.6;
+          phases[i] = Math.random() * Math.PI * 2;
+          frequencies[i] = 0.6 + Math.random() * 0.9;
+        }
       }
 
       sampledSize = size;
@@ -173,6 +188,15 @@ const ParticlePattern = ({ active, className }: ParticlePatternProps) => {
       sampledOffsetY = offsetY;
 
       draw();
+    };
+
+    // Once resizing settles, re-sample to restore the particle density
+    const scheduleResample = () => {
+      if (resampleTimer !== undefined) window.clearTimeout(resampleTimer);
+      resampleTimer = window.setTimeout(() => {
+        resampleTimer = undefined;
+        samplePattern();
+      }, 250);
     };
 
     const resize = () => {
@@ -211,6 +235,7 @@ const ParticlePattern = ({ active, className }: ParticlePatternProps) => {
         sampledOffsetX = offsetX;
         sampledOffsetY = offsetY;
         draw();
+        scheduleResample();
       } else {
         samplePattern();
       }
@@ -339,6 +364,7 @@ const ParticlePattern = ({ active, className }: ParticlePatternProps) => {
 
     return () => {
       cancelAnimationFrame(rafId);
+      if (resampleTimer !== undefined) window.clearTimeout(resampleTimer);
       resizeObserver.disconnect();
       visibilityObserver.disconnect();
       themeObserver.disconnect();

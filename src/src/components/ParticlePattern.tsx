@@ -68,6 +68,9 @@ const ParticlePattern = ({ active, className }: ParticlePatternProps) => {
     let radii = new Float32Array(0);
     let phases = new Float32Array(0);
     let frequencies = new Float32Array(0);
+    let sampledSize = 0;
+    let sampledOffsetX = 0;
+    let sampledOffsetY = 0;
 
     let pointerX = -1e4;
     let pointerY = -1e4;
@@ -165,6 +168,10 @@ const ParticlePattern = ({ active, className }: ParticlePatternProps) => {
         frequencies[i] = 0.6 + Math.random() * 0.9;
       }
 
+      sampledSize = size;
+      sampledOffsetX = offsetX;
+      sampledOffsetY = offsetY;
+
       draw();
     };
 
@@ -185,7 +192,28 @@ const ParticlePattern = ({ active, className }: ParticlePatternProps) => {
       canvas.style.height = `${height}px`;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-      samplePattern();
+      // Rescale the existing pattern in place instead of re-sampling, so
+      // resizing the viewport does not scatter the particles
+      if (particleCount > 0 && sampledSize > 0) {
+        const scale = patternSize / sampledSize;
+        const offsetX = (width - patternSize) / 2;
+        const offsetY = (height - patternSize) / 2;
+
+        for (let i = 0; i < particleCount; i++) {
+          targetsX[i] = offsetX + (targetsX[i] - sampledOffsetX) * scale;
+          targetsY[i] = offsetY + (targetsY[i] - sampledOffsetY) * scale;
+          positionsX[i] = offsetX + (positionsX[i] - sampledOffsetX) * scale;
+          positionsY[i] = offsetY + (positionsY[i] - sampledOffsetY) * scale;
+          radii[i] = Math.min(2, Math.max(0.5, radii[i] * scale));
+        }
+
+        sampledSize = patternSize;
+        sampledOffsetX = offsetX;
+        sampledOffsetY = offsetY;
+        draw();
+      } else {
+        samplePattern();
+      }
     };
 
     const frame = (now: number) => {

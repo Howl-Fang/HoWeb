@@ -197,7 +197,7 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
           initial="hidden"
           animate={loading ? "hidden" : "visible"}
           variants={fadeUp}
-          className="relative z-10 text-muted-foreground text-base md:text-lg font-body tracking-wide mb-3"
+          className="relative z-10 text-muted-foreground text-[clamp(1rem,2.344vw,1.125rem)] font-body tracking-wide mb-3"
         >
           {t.hero.greeting}
         </motion.p>
@@ -212,8 +212,8 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
             }}
             className={`relative w-fit max-w-full whitespace-nowrap font-display leading-tight mb-6 ${
               isLandscape
-                ? "text-5xl md:text-7xl lg:text-8xl"
-                : "text-[4.5rem] md:text-[6.75rem] lg:text-[9rem]"
+                ? "text-[clamp(3rem,9.375vw,6rem)]"
+                : "text-[clamp(4.5rem,14.0625vw,9rem)]"
             }`}
           >
             <motion.span
@@ -258,7 +258,7 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
           initial="hidden"
           animate={loading ? "hidden" : "visible"}
           variants={fadeUp}
-          className="relative z-10 text-lg md:text-xl text-muted-foreground font-body font-light max-w-lg leading-relaxed"
+          className="relative z-10 text-[clamp(1.125rem,2.604vw,1.25rem)] text-muted-foreground font-body font-light max-w-lg leading-relaxed"
         >
           {t.hero.tagline}
         </motion.p>

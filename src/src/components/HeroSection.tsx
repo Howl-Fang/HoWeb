@@ -188,7 +188,7 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
       ) : (
         <ParticlePattern
           active={!loading}
-          className="absolute right-0 top-1/2 -z-10 aspect-square w-[min(115vw,70vh)] translate-x-1/2 -translate-y-1/2"
+          className="absolute right-0 top-[64%] -z-10 aspect-square w-[min(115vw,70vh)] translate-x-1/2 -translate-y-1/2"
         />
       )}
       <div className="relative z-10 max-w-2xl">
@@ -206,6 +206,7 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
             ref={nameRef}
             style={{
               ...shadowVars,
+              y: isLandscape ? 0 : -48,
               rotateX: tiltX,
               rotateY: tiltY,
               transformPerspective: 800,
@@ -223,7 +224,7 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
               variants={nameContainer}
               className="absolute inset-0 block text-transparent
                          [text-shadow:var(--shadow-x)_var(--shadow-y)_10px_rgba(0,0,0,0.3),var(--shadow-x2)_var(--shadow-y2)_20px_rgba(0,0,0,0.2),var(--shadow-x3)_var(--shadow-y3)_30px_rgba(0,0,0,0.1)]
-                         dark:[text-shadow:var(--shadow-x)_var(--shadow-y)_10px_rgba(255,255,255,0.15),var(--shadow-x2)_var(--shadow-y2)_20px_rgba(255,255,255,0.1),var(--shadow-x3)_var(--shadow-y3)_30px_rgba(255,255,255,0.05),var(--shadow-x)_var(--shadow-y)_8px_rgba(0,0,0,0.4)]"
+                         dark:[text-shadow:var(--shadow-x)_var(--shadow-y)_10px_rgba(255,255,255,0.3),var(--shadow-x2)_var(--shadow-y2)_20px_rgba(255,255,255,0.2),var(--shadow-x3)_var(--shadow-y3)_30px_rgba(255,255,255,0.12),var(--shadow-x)_var(--shadow-y)_8px_rgba(0,0,0,0.55)]"
             >
               {Array.from(t.hero.name).map((char, i) => (
                 <motion.span

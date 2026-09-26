@@ -188,16 +188,16 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
       ) : (
         <ParticlePattern
           active={!loading}
-          className="absolute right-0 top-1/2 -z-10 aspect-square w-[min(115vw,70vh)] translate-x-1/2 -translate-y-1/2"
+          className="absolute right-0 top-[64%] -z-10 aspect-square w-[min(115vw,70vh)] translate-x-1/2 -translate-y-1/2"
         />
       )}
-      <div className="relative z-10 max-w-2xl">
+      <div className={`relative z-10 max-w-2xl ${isLandscape ? "" : "-top-12"}`}>
         <motion.p
           custom={0.05}
           initial="hidden"
           animate={loading ? "hidden" : "visible"}
           variants={fadeUp}
-          className="relative z-10 text-muted-foreground text-base md:text-lg font-body tracking-wide mb-3"
+          className="relative z-10 text-muted-foreground text-[clamp(1rem,2.344vw,1.125rem)] font-body tracking-wide mb-3"
         >
           {t.hero.greeting}
         </motion.p>
@@ -212,8 +212,8 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
             }}
             className={`relative w-fit max-w-full whitespace-nowrap font-display leading-tight mb-6 ${
               isLandscape
-                ? "text-5xl md:text-7xl lg:text-8xl"
-                : "text-[4.5rem] md:text-[6.75rem] lg:text-[9rem]"
+                ? "text-[clamp(3rem,9.375vw,6rem)]"
+                : "text-[clamp(4.5rem,14.0625vw,9rem)]"
             }`}
           >
             <motion.span
@@ -223,7 +223,7 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
               variants={nameContainer}
               className="absolute inset-0 block text-transparent
                          [text-shadow:var(--shadow-x)_var(--shadow-y)_10px_rgba(0,0,0,0.3),var(--shadow-x2)_var(--shadow-y2)_20px_rgba(0,0,0,0.2),var(--shadow-x3)_var(--shadow-y3)_30px_rgba(0,0,0,0.1)]
-                         dark:[text-shadow:var(--shadow-x)_var(--shadow-y)_10px_rgba(255,255,255,0.15),var(--shadow-x2)_var(--shadow-y2)_20px_rgba(255,255,255,0.1),var(--shadow-x3)_var(--shadow-y3)_30px_rgba(255,255,255,0.05),var(--shadow-x)_var(--shadow-y)_8px_rgba(0,0,0,0.4)]"
+                         dark:[text-shadow:var(--shadow-x)_var(--shadow-y)_10px_rgba(255,255,255,0.3),var(--shadow-x2)_var(--shadow-y2)_20px_rgba(255,255,255,0.2),var(--shadow-x3)_var(--shadow-y3)_30px_rgba(255,255,255,0.12),var(--shadow-x)_var(--shadow-y)_8px_rgba(0,0,0,0.55)]"
             >
               {Array.from(t.hero.name).map((char, i) => (
                 <motion.span
@@ -258,7 +258,7 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
           initial="hidden"
           animate={loading ? "hidden" : "visible"}
           variants={fadeUp}
-          className="relative z-10 text-lg md:text-xl text-muted-foreground font-body font-light max-w-lg leading-relaxed"
+          className="relative z-10 text-[clamp(1.125rem,2.604vw,1.25rem)] text-muted-foreground font-body font-light max-w-lg leading-relaxed"
         >
           {t.hero.tagline}
         </motion.p>

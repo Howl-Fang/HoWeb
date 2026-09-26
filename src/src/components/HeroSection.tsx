@@ -191,7 +191,7 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
           className="absolute right-0 top-[64%] -z-10 aspect-square w-[min(115vw,70vh)] translate-x-1/2 -translate-y-1/2"
         />
       )}
-      <div className="relative z-10 max-w-2xl">
+      <div className={`relative z-10 max-w-2xl ${isLandscape ? "" : "-top-12"}`}>
         <motion.p
           custom={0.05}
           initial="hidden"
@@ -206,7 +206,6 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
             ref={nameRef}
             style={{
               ...shadowVars,
-              y: isLandscape ? 0 : -48,
               rotateX: tiltX,
               rotateY: tiltY,
               transformPerspective: 800,

@@ -43,8 +43,8 @@ const ContactSection = ({ t }: { t: Translations }) => {
               whileHover={{ x: 4 }}
               className="inline-flex items-center gap-3 text-foreground font-body group"
             >
-              <Mail className="w-4 h-4 text-muted-foreground group-hover:text-highlight transition-colors duration-300" />
-              <span className="border-b border-border group-hover:border-highlight-line transition-colors duration-300">
+              <Mail className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors duration-300" />
+              <span className="border-b border-border group-hover:border-foreground transition-colors duration-300">
                 {email.label}
               </span>
             </motion.a>

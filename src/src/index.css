@@ -36,15 +36,6 @@
     --input: 30 10% 88%;
     --ring: 30 8% 40%;
 
-    /* Accent ramp: one hue at three weights, each with a job.
-       highlight      text and interactive emphasis (5.7:1 on --background)
-       highlight-line 1px rules, hover borders and underlines
-       highlight-soft the particle field, the largest and quietest use */
-    --highlight: 196 92% 29%;
-    --highlight-line: 196 76% 44%;
-    --highlight-soft: 196 84% 33%;
-    --highlight-foreground: 40 20% 97%;
-
     --radius: 0.375rem;
 
     --sidebar-background: 40 15% 95%;
@@ -87,13 +78,6 @@
     --border: 30 8% 20%;
     --input: 30 8% 20%;
     --ring: 30 8% 60%;
-    /* On ink a luminous cyan glares rather than signals, so the dark ramp sits
-       well below the light one: 7.7:1 for text instead of 11:1, and the field
-       drops to roughly half the old luminance */
-    --highlight: 190 65% 50%;
-    --highlight-line: 190 55% 42%;
-    --highlight-soft: 190 55% 44%;
-    --highlight-foreground: 30 10% 8%;
     --sidebar-background: 30 10% 10%;
     --sidebar-foreground: 40 15% 85%;
     --sidebar-primary: 40 15% 85%;
@@ -114,7 +98,7 @@
 
   /* Keyboard users still need to see where they are */
   :focus-visible {
-    outline: 2px solid hsl(var(--highlight));
+    outline: 2px solid hsl(var(--ring));
     outline-offset: 2px;
   }
 
@@ -168,7 +152,7 @@
     left: 0;
     width: 0;
     height: 2px;
-    background-color: hsl(var(--highlight-line));
+    background-color: currentColor;
     transition: width 0.3s ease;
   }
 
@@ -176,10 +160,10 @@
     width: 100%;
   }
 
-  /* The section you are reading keeps the underline drawn, at the text weight
-     so it reads as current rather than hovered */
+  /* The section you are reading keeps the underline drawn, in the foreground
+     weight so it reads as current rather than hovered */
   .underline-hover[data-active="true"]::after {
     width: 100%;
-    background-color: hsl(var(--highlight));
+    background-color: hsl(var(--foreground));
   }
 }

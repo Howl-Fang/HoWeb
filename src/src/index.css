@@ -175,4 +175,11 @@
   .underline-hover:hover::after {
     width: 100%;
   }
+
+  /* The section you are reading keeps the underline drawn, at the text weight
+     so it reads as current rather than hovered */
+  .underline-hover[data-active="true"]::after {
+    width: 100%;
+    background-color: hsl(var(--highlight));
+  }
 }

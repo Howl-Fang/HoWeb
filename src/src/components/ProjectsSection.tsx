@@ -99,7 +99,7 @@ const ProjectsSection = ({ t, locale }: ProjectsSectionProps) => {
             <p className="text-muted-foreground font-body text-lg mb-2">
               {t.projects.comingSoon}
             </p>
-            <p className="text-muted-foreground/70 font-body text-sm">
+            <p className="text-muted-foreground font-body text-sm">
               {t.projects.description}
             </p>
           </motion.div>

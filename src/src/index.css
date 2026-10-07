@@ -23,7 +23,8 @@
     --secondary-foreground: 30 10% 25%;
 
     --muted: 35 10% 92%;
-    --muted-foreground: 30 6% 50%;
+    /* 42% keeps body copy at ~4.9:1 on --background (AA) */
+    --muted-foreground: 30 6% 42%;
 
     --accent: 28 15% 85%;
     --accent-foreground: 30 10% 20%;
@@ -91,8 +92,6 @@
 @layer base {
   * {
     @apply border-border;
-    user-select: none;
-    -webkit-user-select: none;
   }
 
   body {

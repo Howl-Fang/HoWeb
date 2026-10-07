@@ -210,7 +210,7 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
               rotateY: tiltY,
               transformPerspective: 800,
             }}
-            className={`relative w-fit max-w-full whitespace-nowrap font-display leading-tight mb-6 ${
+            className={`relative w-fit max-w-full select-none whitespace-nowrap font-display leading-tight mb-6 ${
               isLandscape
                 ? "text-[clamp(3rem,9.375vw,6rem)]"
                 : "text-[clamp(4.5rem,14.0625vw,9rem)]"

@@ -18,7 +18,7 @@ const NavBar = ({ t, locale, toggleLocale }: NavBarProps) => {
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
-      className="fixed top-0 left-0 right-0 z-50 flex select-none items-center justify-between section-padding !py-5 bg-background/80 backdrop-blur-sm border-b border-border/50"
+      className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between section-padding !py-5 bg-background/80 backdrop-blur-sm border-b border-border/50"
     >
       <a href="#" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="font-display text-lg tracking-wide text-foreground">
         {t.hero.name}
@@ -35,7 +35,7 @@ const NavBar = ({ t, locale, toggleLocale }: NavBarProps) => {
         </a>
         <button
           onClick={toggleLocale}
-          className="text-muted-foreground hover:text-gold transition-colors duration-300 border border-border hover:border-gold rounded-sm px-2 py-0.5 text-xs tracking-wider"
+          className="text-muted-foreground hover:text-highlight transition-colors duration-300 border border-border hover:border-highlight rounded-sm px-2 py-0.5 text-xs tracking-wider"
         >
           {locale === "en" ? "中文" : "EN"}
         </button>

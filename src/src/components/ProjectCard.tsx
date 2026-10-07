@@ -49,14 +49,14 @@ const ProjectCard = ({ project, locale, index, hoveredId, onHoverChange }: Proje
         // Colour is left to CSS: framer-motion cannot interpolate the
         // hsl(var(--token)) values, so it would jump instead of fade
         className={`relative border rounded-lg p-6 bg-card/50 backdrop-blur-sm z-10 transition-colors duration-300 ${
-          isHovered ? "border-gold" : "border-border"
+          isHovered ? "border-highlight" : "border-border"
         }`}
       >
         {/* 头部：标题和标签 */}
         <div className="mb-4">
           <h3
             className={`text-xl font-semibold mb-3 transition-colors duration-300 ${
-              isHovered ? "text-gold" : "text-card-foreground"
+              isHovered ? "text-highlight" : "text-card-foreground"
             }`}
           >
             {title}

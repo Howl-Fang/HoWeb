@@ -64,7 +64,7 @@ const ParticlePattern = ({ active, className }: ParticlePatternProps) => {
     let patternSize = 0;
     let dpr = 1;
     // The near layer carries the accent, the far layer stays neutral dust
-    let nearColor = readColor("--gold", PARTICLE_ALPHA, `hsla(36, 60%, 36%, ${PARTICLE_ALPHA})`);
+    let nearColor = readColor("--highlight", PARTICLE_ALPHA, `hsla(196, 92%, 29%, ${PARTICLE_ALPHA})`);
     const farAlpha = PARTICLE_ALPHA * FAR_ALPHA_SCALE;
     let farColor = readColor(
       "--muted-foreground",
@@ -345,7 +345,7 @@ const ParticlePattern = ({ active, className }: ParticlePatternProps) => {
     visibilityObserver.observe(container);
 
     const themeObserver = new MutationObserver(() => {
-      nearColor = readColor("--gold", PARTICLE_ALPHA, `hsla(36, 60%, 36%, ${PARTICLE_ALPHA})`);
+      nearColor = readColor("--highlight", PARTICLE_ALPHA, `hsla(196, 92%, 29%, ${PARTICLE_ALPHA})`);
       farColor = readColor("--muted-foreground", farAlpha, `hsla(0, 0%, 50%, ${farAlpha})`);
       if (reducedMotion) draw();
     });

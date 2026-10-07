@@ -1,13 +1,19 @@
 import { motion } from "framer-motion";
 import type { Translations, Locale } from "@/i18n/translations";
-import { projects } from "@/data/projects";
+import { projects, type Project } from "@/data/projects";
 import ProjectCard from "./ProjectCard";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 
 interface ProjectsSectionProps {
   t: Translations;
   locale: Locale;
 }
+
+// Rough height model for balancing the columns: a card is a fixed frame plus
+// the text and tags it has to wrap. Measuring instead would need a second
+// layout pass and would fight the entry animations.
+const estimateCardHeight = (project: Project, locale: Locale) =>
+  150 + project.description[locale].length * 0.55 + project.tags.join("").length * 4;
 
 const ProjectsSection = ({ t, locale }: ProjectsSectionProps) => {
   const [hoveredProjectId, setHoveredProjectId] = useState<string | null>(null);
@@ -43,11 +49,25 @@ const ProjectsSection = ({ t, locale }: ProjectsSectionProps) => {
     };
   }, []);
 
-  // Distribute projects into columns for masonry layout
-  const projectsByColumn = Array.from({ length: columns }, () => [] as typeof projects);
-  projects.forEach((project, index) => {
-    projectsByColumn[index % columns].push(project);
-  });
+  // Distribute projects into columns for the masonry layout. Round-robin
+  // (index % columns) looked balanced but left the columns very different
+  // heights once cards had different amounts of text, so send each card to
+  // whichever column is currently shortest.
+  const projectsByColumn = useMemo(() => {
+    const buckets = Array.from(
+      { length: columns },
+      () => [] as { project: Project; index: number }[]
+    );
+    const heights = new Array(columns).fill(0) as number[];
+
+    projects.forEach((project, index) => {
+      const shortest = heights.indexOf(Math.min(...heights));
+      buckets[shortest].push({ project, index });
+      heights[shortest] += estimateCardHeight(project, locale);
+    });
+
+    return buckets;
+  }, [columns, locale]);
 
   return (
     <section id="projects" className="section-padding bg-card">
@@ -72,19 +92,16 @@ const ProjectsSection = ({ t, locale }: ProjectsSectionProps) => {
           >
             {projectsByColumn.map((columnProjects, columnIndex) => (
               <div key={columnIndex} className="flex flex-col gap-6">
-                {columnProjects.map((project, indexInColumn) => {
-                  const projectIndex = projects.findIndex(p => p.id === project.id);
-                  return (
-                    <ProjectCard
-                      key={project.id}
-                      project={project}
-                      locale={locale}
-                      index={projectIndex}
-                      hoveredId={hoveredProjectId}
-                      onHoverChange={setHoveredProjectId}
-                    />
-                  );
-                })}
+                {columnProjects.map(({ project, index }) => (
+                  <ProjectCard
+                    key={project.id}
+                    project={project}
+                    locale={locale}
+                    index={index}
+                    hoveredId={hoveredProjectId}
+                    onHoverChange={setHoveredProjectId}
+                  />
+                ))}
               </div>
             ))}
           </div>

@@ -3,10 +3,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Github, ExternalLink } from "lucide-react";
 import type { Project } from "@/data/projects";
+import type { Locale } from "@/i18n/translations";
 
 interface ProjectCardProps {
   project: Project;
-  locale: "en" | "zh";
+  locale: Locale;
   index: number;
   hoveredId: string | null;
   onHoverChange: (id: string | null) => void;

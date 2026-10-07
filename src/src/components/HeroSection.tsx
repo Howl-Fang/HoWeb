@@ -210,7 +210,7 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
               rotateY: tiltY,
               transformPerspective: 800,
             }}
-            className={`relative w-fit max-w-full select-none whitespace-nowrap font-display leading-tight mb-6 ${
+            className={`hero-name relative w-fit max-w-full select-none whitespace-nowrap font-display leading-tight mb-6 ${
               isLandscape
                 ? "text-[clamp(3rem,9.375vw,6rem)]"
                 : "text-[clamp(4.5rem,14.0625vw,9rem)]"
@@ -222,8 +222,8 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
               animate={loading ? "hidden" : "visible"}
               variants={nameContainer}
               className="absolute inset-0 block text-transparent
-                         [text-shadow:var(--shadow-x)_var(--shadow-y)_10px_rgba(0,0,0,0.3),var(--shadow-x2)_var(--shadow-y2)_20px_rgba(0,0,0,0.2),var(--shadow-x3)_var(--shadow-y3)_30px_rgba(0,0,0,0.1)]
-                         dark:[text-shadow:var(--shadow-x)_var(--shadow-y)_10px_rgba(255,255,255,0.3),var(--shadow-x2)_var(--shadow-y2)_20px_rgba(255,255,255,0.2),var(--shadow-x3)_var(--shadow-y3)_30px_rgba(255,255,255,0.12),var(--shadow-x)_var(--shadow-y)_8px_rgba(0,0,0,0.55)]"
+                         [text-shadow:var(--shadow-x)_var(--shadow-y)_10px_rgba(0,0,0,0.28),var(--shadow-x2)_var(--shadow-y2)_24px_rgba(0,0,0,0.16),var(--shadow-x3)_var(--shadow-y3)_44px_rgba(0,0,0,0.08)]
+                         dark:[text-shadow:var(--shadow-x)_var(--shadow-y)_10px_rgba(255,255,255,0.28),var(--shadow-x2)_var(--shadow-y2)_24px_rgba(255,255,255,0.17),var(--shadow-x3)_var(--shadow-y3)_44px_rgba(255,255,255,0.1),var(--shadow-x)_var(--shadow-y)_8px_rgba(0,0,0,0.55)]"
             >
               {Array.from(t.hero.name).map((char, i) => (
                 <motion.span
@@ -267,7 +267,7 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
           initial="hidden"
           animate={loading ? "hidden" : "visible"}
           variants={fadeUp}
-          className="mt-10 h-px w-16 bg-border"
+          className="mt-10 h-px w-24 bg-gradient-to-r from-gold to-transparent"
         />
       </div>
     </section>

@@ -35,7 +35,7 @@ const NavBar = ({ t, locale, toggleLocale }: NavBarProps) => {
         </a>
         <button
           onClick={toggleLocale}
-          className="text-muted-foreground hover:text-foreground transition-colors duration-300 border border-border rounded-sm px-2 py-0.5 text-xs tracking-wider"
+          className="text-muted-foreground hover:text-gold transition-colors duration-300 border border-border hover:border-gold rounded-sm px-2 py-0.5 text-xs tracking-wider"
         >
           {locale === "en" ? "中文" : "EN"}
         </button>

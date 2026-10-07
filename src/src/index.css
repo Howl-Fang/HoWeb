@@ -36,6 +36,11 @@
     --input: 30 10% 88%;
     --ring: 30 8% 40%;
 
+    /* Accent: amber/champagne. Darkened in light mode so it can carry text
+       (~4.7:1 on --background) instead of only decorating */
+    --gold: 36 60% 36%;
+    --gold-foreground: 40 20% 97%;
+
     --radius: 0.375rem;
 
     --sidebar-background: 40 15% 95%;
@@ -78,6 +83,9 @@
     --border: 30 8% 20%;
     --input: 30 8% 20%;
     --ring: 30 8% 60%;
+    /* Bright champagne against the ink background */
+    --gold: 40 65% 60%;
+    --gold-foreground: 30 10% 8%;
     --sidebar-background: 30 10% 10%;
     --sidebar-foreground: 40 15% 85%;
     --sidebar-primary: 40 15% 85%;
@@ -99,8 +107,31 @@
     font-family: var(--font-body);
   }
 
+  /* Display type is tracked per locale: the Latin serif wants optical
+     tightening at large sizes, CJK wants a little air between glyphs.
+     useLocale keeps <html lang> in sync, so this follows the visible copy. */
   h1, h2, h3, h4 {
     font-family: var(--font-display);
+    font-optical-sizing: auto;
+    letter-spacing: -0.015em;
+  }
+
+  html[lang^="zh"] h1,
+  html[lang^="zh"] h2,
+  html[lang^="zh"] h3,
+  html[lang^="zh"] h4 {
+    letter-spacing: 0.03em;
+  }
+}
+
+@layer components {
+  /* The hero name is set much larger than any heading, so it takes more */
+  .hero-name {
+    letter-spacing: -0.03em;
+  }
+
+  html[lang^="zh"] .hero-name {
+    letter-spacing: 0.05em;
   }
 }
 
@@ -121,7 +152,7 @@
     left: 0;
     width: 0;
     height: 2px;
-    background-color: currentColor;
+    background-color: hsl(var(--gold));
     transition: width 0.3s ease;
   }
 

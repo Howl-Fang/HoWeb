@@ -46,19 +46,21 @@ const ProjectCard = ({ project, locale, index, hoveredId, onHoverChange }: Proje
           duration: 0.25,
           ease: "easeOut",
         }}
-        className="relative border border-border rounded-lg p-6 bg-card/50 backdrop-blur-sm z-10"
+        // Colour is left to CSS: framer-motion cannot interpolate the
+        // hsl(var(--token)) values, so it would jump instead of fade
+        className={`relative border rounded-lg p-6 bg-card/50 backdrop-blur-sm z-10 transition-colors duration-300 ${
+          isHovered ? "border-gold" : "border-border"
+        }`}
       >
         {/* 头部：标题和标签 */}
         <div className="mb-4">
-          <motion.h3
-            animate={{
-              color: isHovered ? "hsl(var(--primary))" : "hsl(var(--card-foreground))",
-            }}
-            transition={{ duration: 0.25 }}
-            className="text-xl font-semibold mb-3"
+          <h3
+            className={`text-xl font-semibold mb-3 transition-colors duration-300 ${
+              isHovered ? "text-gold" : "text-card-foreground"
+            }`}
           >
             {title}
-          </motion.h3>
+          </h3>
           <div className="flex flex-wrap gap-2">
             {project.tags.map((tag) => (
               <Badge

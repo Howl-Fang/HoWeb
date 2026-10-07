@@ -20,20 +20,23 @@ const ProjectCard = ({ project, locale, index, hoveredId, onHoverChange }: Proje
   const isOtherHovered = hoveredId !== null && hoveredId !== project.id;
 
   return (
+    // Entrance and hover sit on separate elements: sharing one meant the hover
+    // lift waited out the entrance stagger, and lifted the card twice over
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 12 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-100px" }}
+      // start the reveal well before the card reaches the screen: at reading
+      // speed the 320px of travel covers most of the animation, so the card is
+      // already there by the time it is looked at
+      viewport={{ once: true, margin: "0px 0px 320px 0px" }}
       onMouseEnter={() => onHoverChange(project.id)}
       onMouseLeave={() => onHoverChange(null)}
       className="relative group"
-      animate={{
-        y: isHovered ? -8 : 0,
-      }}
       transition={{
-        duration: 0.25,
+        duration: 0.35,
         ease: "easeOut",
-        delay: index * 0.05,
+        // cap the cascade so the last card never lags far behind the first
+        delay: Math.min(index * 0.03, 0.12),
       }}
     >
       {/* 卡片容器 */}
@@ -43,7 +46,7 @@ const ProjectCard = ({ project, locale, index, hoveredId, onHoverChange }: Proje
           opacity: isOtherHovered ? 0.4 : 1,
         }}
         transition={{
-          duration: 0.25,
+          duration: 0.2,
           ease: "easeOut",
         }}
         className="relative border border-border rounded-lg p-6 bg-card/50 backdrop-blur-sm z-10"

@@ -77,7 +77,7 @@ const ProjectsSection = ({ t, locale }: ProjectsSectionProps) => {
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: true, margin: "0px 0px 60px 0px" }}
           transition={{ duration: 0.6 }}
           className="text-3xl md:text-4xl font-display text-card-foreground mb-8"
         >
@@ -111,7 +111,7 @@ const ProjectsSection = ({ t, locale }: ProjectsSectionProps) => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: true, margin: "0px 0px 60px 0px" }}
             transition={{ duration: 0.6, delay: 0.15 }}
             className="border border-border border-dashed rounded-md p-10 md:p-16 text-center"
           >

@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import type { Translations, Locale } from "@/i18n/translations";
 import { projects, type Project } from "@/data/projects";
 import ProjectCard from "./ProjectCard";
+import SectionMarker from "./SectionMarker";
 import { useState, useEffect, useMemo, useRef } from "react";
 
 interface ProjectsSectionProps {
@@ -72,6 +73,7 @@ const ProjectsSection = ({ t, locale }: ProjectsSectionProps) => {
   return (
     <section id="projects" className="section-padding bg-card">
       <div className="max-w-3xl mx-auto">
+        <SectionMarker index="02" />
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}

@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Mail } from "lucide-react";
 import type { Translations } from "@/i18n/translations";
+import SectionMarker from "./SectionMarker";
 
 const ContactSection = ({ t }: { t: Translations }) => {
   const emails = [
@@ -11,6 +12,7 @@ const ContactSection = ({ t }: { t: Translations }) => {
   return (
     <section id="contact" className="section-padding">
       <div className="max-w-3xl mx-auto">
+        <SectionMarker index="03" />
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}

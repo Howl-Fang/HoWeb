@@ -1,5 +1,6 @@
 import { useLocale } from "@/i18n/useLocale";
 import NavBar from "@/components/NavBar";
+import ScrollProgress from "@/components/ScrollProgress";
 import HeroSection from "@/components/HeroSection";
 import AboutSection from "@/components/AboutSection";
 import ProjectsSection from "@/components/ProjectsSection";
@@ -79,6 +80,7 @@ function Index() {
         )}
       </AnimatePresence>
       <div className="relative min-h-screen bg-background">
+        <ScrollProgress />
         <NavBar t={t} locale={locale} toggleLocale={toggleLocale} />
         <div className="sticky top-0 z-0 h-screen">
           <HeroSection t={t} loading={loading} />

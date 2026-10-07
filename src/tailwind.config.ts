@@ -44,6 +44,8 @@ export default {
         highlight: {
           DEFAULT: "hsl(var(--highlight))",
           foreground: "hsl(var(--highlight-foreground))",
+          line: "hsl(var(--highlight-line))",
+          soft: "hsl(var(--highlight-soft))",
         },
         accent: {
           DEFAULT: "hsl(var(--accent))",

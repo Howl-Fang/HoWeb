@@ -8,6 +8,12 @@ interface NavBarProps {
 }
 
 const NavBar = ({ t, locale, toggleLocale }: NavBarProps) => {
+  const links = [
+    { id: "about", label: t.nav.about },
+    { id: "projects", label: t.nav.projects },
+    { id: "contact", label: t.nav.contact },
+  ];
+
   const scrollTo = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault();
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
@@ -24,18 +30,19 @@ const NavBar = ({ t, locale, toggleLocale }: NavBarProps) => {
         {t.hero.name}
       </a>
       <div className="flex items-center gap-6 md:gap-8 text-sm font-body">
-        <a href="#about" onClick={(e) => scrollTo(e, "about")} className="underline-hover text-muted-foreground hover:text-foreground transition-colors duration-300">
-          {t.nav.about}
-        </a>
-        <a href="#projects" onClick={(e) => scrollTo(e, "projects")} className="underline-hover text-muted-foreground hover:text-foreground transition-colors duration-300">
-          {t.nav.projects}
-        </a>
-        <a href="#contact" onClick={(e) => scrollTo(e, "contact")} className="underline-hover text-muted-foreground hover:text-foreground transition-colors duration-300">
-          {t.nav.contact}
-        </a>
+        {links.map((link) => (
+          <a
+            key={link.id}
+            href={`#${link.id}`}
+            onClick={(e) => scrollTo(e, link.id)}
+            className="underline-hover text-muted-foreground hover:text-foreground transition-colors duration-300"
+          >
+            {link.label}
+          </a>
+        ))}
         <button
           onClick={toggleLocale}
-          className="text-muted-foreground hover:text-highlight transition-colors duration-300 border border-border hover:border-highlight rounded-sm px-2 py-0.5 text-xs tracking-wider"
+          className="text-muted-foreground hover:text-highlight transition-colors duration-300 border border-border hover:border-highlight-line rounded-sm px-2 py-0.5 text-xs tracking-wider"
         >
           {locale === "en" ? "中文" : "EN"}
         </button>

@@ -267,7 +267,7 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
           initial="hidden"
           animate={loading ? "hidden" : "visible"}
           variants={fadeUp}
-          className="mt-10 h-px w-24 bg-gradient-to-r from-highlight to-transparent"
+          className="mt-10 h-px w-24 bg-gradient-to-r from-highlight-line to-transparent"
         />
       </div>
     </section>

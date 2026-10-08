@@ -96,8 +96,15 @@ function Index() {
         </div>
         {/* See-through, not frosted: the pinned hero stays legible behind the
             copy. What keeps the copy readable is spent locally instead — a
-            bloom behind loose text, a blur on each card. */}
-        <div className="relative z-10 overflow-x-clip bg-background/70">
+            bloom behind loose text, a blur on each card.
+            Nothing here clips, either. The ramp above the sheet lives just
+            outside this box, and Safari drops it when the box clips at all,
+            which leaves the join as a hard edge: reported twice, and Firefox
+            renders it exactly as the spec says it should (clipping one axis
+            leaves the other visible). Headless WebKit plays the spec here too,
+            so it could not settle this — Safari's own rendering is the
+            evidence. */}
+        <div className="relative z-10 bg-background/70">
           {/* Ramps from the sheet's own tint to nothing, so the top of the
               sheet bleeds into the hero instead of starting at a hard line */}
           <div

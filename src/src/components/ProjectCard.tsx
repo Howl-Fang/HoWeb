@@ -43,7 +43,7 @@ const ProjectCard = ({ project, locale, index, hoveredId, onHoverChange }: Proje
       <motion.div
         animate={{
           y: isHovered ? -8 : 0,
-          opacity: isOtherHovered ? 0.4 : 1,
+          opacity: isOtherHovered ? 0.6 : 1,
         }}
         transition={{
           duration: 0.2,

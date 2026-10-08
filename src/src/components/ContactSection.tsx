@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Mail } from "lucide-react";
 import type { Translations } from "@/i18n/translations";
 import SectionMarker from "./SectionMarker";
+import TextGround from "./TextGround";
 
 const ContactSection = ({ t }: { t: Translations }) => {
   const emails = [
@@ -13,25 +14,29 @@ const ContactSection = ({ t }: { t: Translations }) => {
     <section id="contact" className="section-padding">
       <div className="max-w-3xl mx-auto">
         <SectionMarker index="03" />
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "0px 0px 60px 0px" }}
-          transition={{ duration: 0.6 }}
-          className="text-bloom w-fit text-3xl md:text-4xl font-display text-foreground mb-4"
-        >
-          {t.contact.title}
-        </motion.h2>
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "0px 0px 60px 0px" }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="text-bloom w-fit text-muted-foreground font-body text-base md:text-lg font-light mb-8"
-        >
-          {t.contact.description}
-        </motion.p>
-        <div className="text-bloom w-fit flex flex-col items-start gap-4">
+        <TextGround className="mb-4">
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "0px 0px 60px 0px" }}
+            transition={{ duration: 0.6 }}
+            className="text-3xl md:text-4xl font-display text-foreground"
+          >
+            {t.contact.title}
+          </motion.h2>
+        </TextGround>
+        <TextGround className="mb-8">
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "0px 0px 60px 0px" }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="text-muted-foreground font-body text-base md:text-lg font-light"
+          >
+            {t.contact.description}
+          </motion.p>
+        </TextGround>
+        <TextGround className="flex flex-col items-start gap-4">
           {emails.map((email, index) => (
             <motion.a
               key={email.address}
@@ -61,7 +66,7 @@ const ContactSection = ({ t }: { t: Translations }) => {
               </span>
             </motion.a>
           ))}
-        </div>
+        </TextGround>
       </div>
     </section>
   );

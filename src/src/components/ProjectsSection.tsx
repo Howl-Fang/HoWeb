@@ -3,6 +3,7 @@ import type { Translations, Locale } from "@/i18n/translations";
 import { projects, type Project } from "@/data/projects";
 import ProjectCard from "./ProjectCard";
 import SectionMarker from "./SectionMarker";
+import TextGround from "./TextGround";
 import { useState, useEffect, useMemo, useRef } from "react";
 
 interface ProjectsSectionProps {
@@ -74,15 +75,17 @@ const ProjectsSection = ({ t, locale }: ProjectsSectionProps) => {
     <section id="projects" className="section-padding">
       <div className="max-w-3xl mx-auto">
         <SectionMarker index="02" />
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "0px 0px 60px 0px" }}
-          transition={{ duration: 0.6 }}
-          className="text-bloom w-fit text-3xl md:text-4xl font-display text-card-foreground mb-8"
-        >
-          {t.projects.title}
-        </motion.h2>
+        <TextGround className="mb-8">
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "0px 0px 60px 0px" }}
+            transition={{ duration: 0.6 }}
+            className="text-3xl md:text-4xl font-display text-card-foreground"
+          >
+            {t.projects.title}
+          </motion.h2>
+        </TextGround>
 
         {projects.length > 0 ? (
           <div
@@ -108,20 +111,22 @@ const ProjectsSection = ({ t, locale }: ProjectsSectionProps) => {
             ))}
           </div>
         ) : (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "0px 0px 60px 0px" }}
-            transition={{ duration: 0.6, delay: 0.15 }}
-            className="text-bloom border border-border border-dashed rounded-md p-10 md:p-16 text-center"
-          >
+          <TextGround>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "0px 0px 60px 0px" }}
+              transition={{ duration: 0.6, delay: 0.15 }}
+              className="border border-border border-dashed rounded-md p-10 md:p-16 text-center"
+            >
             <p className="text-muted-foreground font-body text-lg mb-2">
               {t.projects.comingSoon}
             </p>
             <p className="text-muted-foreground font-body text-sm">
               {t.projects.description}
             </p>
-          </motion.div>
+            </motion.div>
+          </TextGround>
         )}
       </div>
     </section>

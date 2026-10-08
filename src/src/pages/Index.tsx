@@ -94,7 +94,9 @@ function Index() {
         <div className="sticky top-0 z-0 h-screen">
           <HeroSection t={t} loading={loading} />
         </div>
-        <div className="relative z-10 bg-background">
+        {/* Frosted rather than opaque: the pinned hero keeps showing through
+            the sheet as a blurred wash instead of being covered outright */}
+        <div className="relative z-10 bg-background/80 backdrop-blur-3xl">
           <div
             aria-hidden="true"
             className="pointer-events-none absolute bottom-full left-0 h-40 w-full bg-gradient-to-t from-background to-transparent"

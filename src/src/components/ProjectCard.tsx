@@ -49,7 +49,7 @@ const ProjectCard = ({ project, locale, index, hoveredId, onHoverChange }: Proje
           duration: 0.2,
           ease: "easeOut",
         }}
-        className="relative border border-border rounded-lg p-6 bg-card/50 backdrop-blur-sm z-10"
+        className="relative border border-border rounded-lg p-6 bg-card/60 z-10"
       >
         {/* 头部：标题和标签 */}
         <div className="mb-4">

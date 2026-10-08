@@ -140,6 +140,30 @@
     @apply px-[clamp(1.5rem,28.125vw_-_12rem,6rem)] py-[clamp(4rem,8.333vw_+_2rem,6rem)];
   }
 
+  /* Loose copy carries its own soft ground. The sheet above the hero is
+     see-through, so text that is not inside a card would otherwise sit
+     directly on whatever is behind it. The bloom bleeds past the text box so
+     neighbouring blocks merge into one patch instead of reading as separate
+     highlights. */
+  .text-bloom {
+    position: relative;
+  }
+
+  .text-bloom::before {
+    content: '';
+    position: absolute;
+    /* the horizontal bleed stays inside section-padding, so it can never
+       push a horizontal scrollbar onto the page */
+    inset: -1.25rem -1.5rem;
+    z-index: -1;
+    pointer-events: none;
+    background-color: hsl(var(--background));
+    /* a solid block with a wide blur rather than a radial gradient: every
+       line of a paragraph then sits on the same ground, instead of the first
+       and last lines getting a thinner slice of an ellipse */
+    filter: blur(24px);
+  }
+
   .underline-hover {
     position: relative;
     display: inline-block;

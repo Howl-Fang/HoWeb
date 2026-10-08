@@ -12,7 +12,7 @@ const AboutSection = ({ t }: { t: Translations }) => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "0px 0px 60px 0px" }}
           transition={{ duration: 0.6 }}
-          className="text-3xl md:text-4xl font-display text-foreground mb-8"
+          className="text-bloom text-3xl md:text-4xl font-display text-foreground mb-8"
         >
           {t.about.title}
         </motion.h2>
@@ -21,7 +21,7 @@ const AboutSection = ({ t }: { t: Translations }) => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "0px 0px 60px 0px" }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="text-muted-foreground font-body text-base md:text-lg leading-relaxed mb-5 font-light"
+          className="text-bloom text-muted-foreground font-body text-base md:text-lg leading-relaxed mb-5 font-light"
         >
           {t.about.p1}
         </motion.p>
@@ -30,7 +30,7 @@ const AboutSection = ({ t }: { t: Translations }) => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "0px 0px 60px 0px" }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="text-muted-foreground font-body text-base md:text-lg leading-relaxed font-light"
+          className="text-bloom text-muted-foreground font-body text-base md:text-lg leading-relaxed font-light"
         >
           {t.about.p2}
         </motion.p>

@@ -18,7 +18,7 @@ const ContactSection = ({ t }: { t: Translations }) => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "0px 0px 60px 0px" }}
           transition={{ duration: 0.6 }}
-          className="text-3xl md:text-4xl font-display text-foreground mb-4"
+          className="text-bloom text-3xl md:text-4xl font-display text-foreground mb-4"
         >
           {t.contact.title}
         </motion.h2>
@@ -27,11 +27,11 @@ const ContactSection = ({ t }: { t: Translations }) => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "0px 0px 60px 0px" }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="text-muted-foreground font-body text-base md:text-lg font-light mb-8"
+          className="text-bloom text-muted-foreground font-body text-base md:text-lg font-light mb-8"
         >
           {t.contact.description}
         </motion.p>
-        <div className="flex flex-col items-start gap-4">
+        <div className="text-bloom flex flex-col items-start gap-4">
           {emails.map((email, index) => (
             <motion.a
               key={email.address}

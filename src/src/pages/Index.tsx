@@ -94,9 +94,10 @@ function Index() {
         <div className="sticky top-0 z-0 h-screen">
           <HeroSection t={t} loading={loading} />
         </div>
-        {/* Frosted rather than opaque: the pinned hero keeps showing through
-            the sheet as a blurred wash instead of being covered outright */}
-        <div className="relative z-10 bg-background/80 backdrop-blur-3xl">
+        {/* See-through, not frosted: the pinned hero stays legible behind the
+            copy. What keeps the copy readable is spent locally instead — a
+            bloom behind loose text, a blur on each card. */}
+        <div className="relative z-10 overflow-x-clip bg-background/70">
           <div
             aria-hidden="true"
             className="pointer-events-none absolute bottom-full left-0 h-40 w-full bg-gradient-to-t from-background to-transparent"

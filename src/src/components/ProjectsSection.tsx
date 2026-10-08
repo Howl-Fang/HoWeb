@@ -71,7 +71,7 @@ const ProjectsSection = ({ t, locale }: ProjectsSectionProps) => {
   }, [columns, locale]);
 
   return (
-    <section id="projects" className="section-padding bg-card/60">
+    <section id="projects" className="section-padding bg-card/50">
       <div className="max-w-3xl mx-auto">
         <SectionMarker index="02" />
         <motion.h2
@@ -79,7 +79,7 @@ const ProjectsSection = ({ t, locale }: ProjectsSectionProps) => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "0px 0px 60px 0px" }}
           transition={{ duration: 0.6 }}
-          className="text-3xl md:text-4xl font-display text-card-foreground mb-8"
+          className="text-bloom text-3xl md:text-4xl font-display text-card-foreground mb-8"
         >
           {t.projects.title}
         </motion.h2>
@@ -113,7 +113,7 @@ const ProjectsSection = ({ t, locale }: ProjectsSectionProps) => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "0px 0px 60px 0px" }}
             transition={{ duration: 0.6, delay: 0.15 }}
-            className="border border-border border-dashed rounded-md p-10 md:p-16 text-center"
+            className="text-bloom border border-border border-dashed rounded-md p-10 md:p-16 text-center"
           >
             <p className="text-muted-foreground font-body text-lg mb-2">
               {t.projects.comingSoon}

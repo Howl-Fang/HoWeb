@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import patternUrl from "../../resources/ico.svg";
+import { createPointerFilter } from "@/lib/pointer";
 
 interface ParticlePatternProps {
   active: boolean;
@@ -17,18 +18,29 @@ const CANVAS_PADDING_RATIO = 0.25;
 const SAMPLE_STEPS = [3, 4, 5, 6, 8, 10];
 const PARTICLE_ALPHA = 0.4;
 
-const readParticleColor = () => {
-  if (typeof window === "undefined") return `hsla(0, 0%, 50%, ${PARTICLE_ALPHA})`;
+// Two depths instead of one flat field: a dim, slow, barely-reacting layer
+// behind and an accent-lit layer in front. The gap in spring, drift and
+// repulsion is what reads as parallax when the pointer moves through it.
+const NEAR_SHARE = 0.45;
+const FAR_RADIUS_SCALE = 0.7;
+const FAR_ALPHA_SCALE = 0.45;
+const FAR_REPEL_SCALE = 0.4;
+const FAR_SPRING_SCALE = 0.55;
+const FAR_DRIFT_SCALE = 0.6;
 
-  const raw = getComputedStyle(document.documentElement)
-    .getPropertyValue("--muted-foreground")
-    .trim();
-  const parts = raw.split(/\s+/);
+/** A token from the stylesheet as hsla, so the canvas follows the theme */
+const readColor = (token: string, alpha: number) => {
+  const fallback = `hsla(0, 0%, 50%, ${alpha})`;
+  if (typeof window === "undefined") return fallback;
 
-  if (parts.length >= 3) {
-    return `hsla(${parts[0]}, ${parts[1]}, ${parts[2]}, ${PARTICLE_ALPHA})`;
-  }
-  return `hsla(0, 0%, 50%, ${PARTICLE_ALPHA})`;
+  const parts = getComputedStyle(document.documentElement)
+    .getPropertyValue(token)
+    .trim()
+    .split(/\s+/);
+
+  return parts.length >= 3
+    ? `hsla(${parts[0]}, ${parts[1]}, ${parts[2]}, ${alpha})`
+    : fallback;
 };
 
 const ParticlePattern = ({ active, className }: ParticlePatternProps) => {
@@ -49,13 +61,15 @@ const ParticlePattern = ({ active, className }: ParticlePatternProps) => {
     if (!ctx) return;
 
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const canInteract = window.matchMedia("(pointer: fine)").matches;
 
     let width = 0;
     let height = 0;
     let patternSize = 0;
     let dpr = 1;
-    let color = readParticleColor();
+    // The near layer carries the accent, the far layer stays neutral dust
+    let nearColor = readColor("--muted-foreground", PARTICLE_ALPHA);
+    const farAlpha = PARTICLE_ALPHA * FAR_ALPHA_SCALE;
+    let farColor = readColor("--muted-foreground", farAlpha);
 
     let image: HTMLImageElement | null = null;
     let particleCount = 0;
@@ -66,6 +80,7 @@ const ParticlePattern = ({ active, className }: ParticlePatternProps) => {
     let targetsX = new Float32Array(0);
     let targetsY = new Float32Array(0);
     let radii = new Float32Array(0);
+    let depths = new Float32Array(0);
     let phases = new Float32Array(0);
     let frequencies = new Float32Array(0);
     let sampledSize = 0;
@@ -81,18 +96,28 @@ const ParticlePattern = ({ active, className }: ParticlePatternProps) => {
     let lastTime = 0;
     let elapsed = 0;
 
+    const drawLayer = (depth: number, fill: string) => {
+      ctx.fillStyle = fill;
+      ctx.beginPath();
+
+      let drew = false;
+      for (let i = 0; i < particleCount; i++) {
+        if (depths[i] !== depth) continue;
+        const radius = radii[i];
+        ctx.moveTo(positionsX[i] + radius, positionsY[i]);
+        ctx.arc(positionsX[i], positionsY[i], radius, 0, Math.PI * 2);
+        drew = true;
+      }
+
+      if (drew) ctx.fill();
+    };
+
     const draw = () => {
       ctx.clearRect(0, 0, width, height);
       if (particleCount === 0) return;
 
-      ctx.fillStyle = color;
-      ctx.beginPath();
-      for (let i = 0; i < particleCount; i++) {
-        const radius = radii[i];
-        ctx.moveTo(positionsX[i] + radius, positionsY[i]);
-        ctx.arc(positionsX[i], positionsY[i], radius, 0, Math.PI * 2);
-      }
-      ctx.fill();
+      drawLayer(0, farColor);
+      drawLayer(1, nearColor);
     };
 
     const samplePattern = () => {
@@ -151,10 +176,14 @@ const ParticlePattern = ({ active, className }: ParticlePatternProps) => {
       targetsX = new Float32Array(particleCount);
       targetsY = new Float32Array(particleCount);
       radii = new Float32Array(particleCount);
+      depths = new Float32Array(particleCount);
       phases = new Float32Array(particleCount);
       frequencies = new Float32Array(particleCount);
 
       for (let i = 0; i < particleCount; i++) {
+        const near = Math.random() < NEAR_SHARE;
+        const radius = 0.7 + Math.random() * 0.6;
+
         targetsX[i] = pointsX[i];
         targetsY[i] = pointsY[i];
         positionsX[i] = reducedMotion
@@ -163,7 +192,8 @@ const ParticlePattern = ({ active, className }: ParticlePatternProps) => {
         positionsY[i] = reducedMotion
           ? targetsY[i]
           : offsetY + Math.random() * size;
-        radii[i] = 0.7 + Math.random() * 0.6;
+        radii[i] = near ? radius : radius * FAR_RADIUS_SCALE;
+        depths[i] = near ? 1 : 0;
         phases[i] = Math.random() * Math.PI * 2;
         frequencies[i] = 0.6 + Math.random() * 0.9;
       }
@@ -234,6 +264,8 @@ const ParticlePattern = ({ active, className }: ParticlePatternProps) => {
           let velocityX = velocitiesX[i];
           let velocityY = velocitiesY[i];
 
+          const near = depths[i] === 1;
+
           if (pointerActive) {
             const dx = x - pointerX;
             const dy = y - pointerY;
@@ -242,18 +274,21 @@ const ParticlePattern = ({ active, className }: ParticlePatternProps) => {
             if (distanceSq > 0.0001) {
               const distance = Math.sqrt(distanceSq);
               const falloff = 1 + distance / REPEL_FALLOFF;
-              const force = (REPEL_FORCE / (falloff * falloff)) * delta;
+              const force =
+                (REPEL_FORCE / (falloff * falloff)) * delta * (near ? 1 : FAR_REPEL_SCALE);
               velocityX += (dx / distance) * force;
               velocityY += (dy / distance) * force;
             }
           }
 
-          const noiseTime = elapsed * 0.0016 * frequencies[i];
+          const noiseTime =
+            elapsed * 0.0016 * frequencies[i] * (near ? 1 : FAR_DRIFT_SCALE);
           const noiseX = Math.sin(noiseTime + phases[i]) * NOISE_AMPLITUDE;
           const noiseY = Math.cos(noiseTime * 0.83 + phases[i] * 1.7) * NOISE_AMPLITUDE;
 
-          velocityX += (targetsX[i] + noiseX - x) * SPRING * delta;
-          velocityY += (targetsY[i] + noiseY - y) * SPRING * delta;
+          const spring = near ? SPRING : SPRING * FAR_SPRING_SCALE;
+          velocityX += (targetsX[i] + noiseX - x) * spring * delta;
+          velocityY += (targetsY[i] + noiseY - y) * spring * delta;
 
           velocityX = Math.max(-MAX_VELOCITY, Math.min(MAX_VELOCITY, velocityX));
           velocityY = Math.max(-MAX_VELOCITY, Math.min(MAX_VELOCITY, velocityY));
@@ -272,13 +307,7 @@ const ParticlePattern = ({ active, className }: ParticlePatternProps) => {
       draw();
     };
 
-    // Unknown/empty pointerType means the browser cannot classify the pointer,
-    // so fall back to the capability media query
-    const canUsePointer = (event: PointerEvent) => {
-      if (event.pointerType === "mouse" || event.pointerType === "pen") return true;
-      if (event.pointerType === "touch") return false;
-      return canInteract;
-    };
+    const canUsePointer = createPointerFilter();
 
     const handlePointerMove = (event: PointerEvent) => {
       if (!canUsePointer(event)) return;
@@ -309,7 +338,8 @@ const ParticlePattern = ({ active, className }: ParticlePatternProps) => {
     visibilityObserver.observe(container);
 
     const themeObserver = new MutationObserver(() => {
-      color = readParticleColor();
+      nearColor = readColor("--muted-foreground", PARTICLE_ALPHA);
+      farColor = readColor("--muted-foreground", farAlpha);
       if (reducedMotion) draw();
     });
     themeObserver.observe(document.documentElement, {

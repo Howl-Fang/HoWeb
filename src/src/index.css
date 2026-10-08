@@ -13,9 +13,6 @@
     --card: 40 15% 95%;
     --card-foreground: 30 10% 15%;
 
-    --popover: 40 20% 97%;
-    --popover-foreground: 30 10% 15%;
-
     --primary: 30 8% 30%;
     --primary-foreground: 40 20% 97%;
 
@@ -23,7 +20,8 @@
     --secondary-foreground: 30 10% 25%;
 
     --muted: 35 10% 92%;
-    --muted-foreground: 30 6% 50%;
+    /* 42% keeps body copy at ~4.9:1 on --background (AA) */
+    --muted-foreground: 30 6% 42%;
 
     --accent: 28 15% 85%;
     --accent-foreground: 30 10% 20%;
@@ -37,24 +35,9 @@
 
     --radius: 0.375rem;
 
-    --sidebar-background: 40 15% 95%;
-    --sidebar-foreground: 30 10% 25%;
-    --sidebar-primary: 30 8% 20%;
-    --sidebar-primary-foreground: 40 20% 97%;
-    --sidebar-accent: 35 12% 90%;
-    --sidebar-accent-foreground: 30 10% 20%;
-    --sidebar-border: 30 10% 88%;
-    --sidebar-ring: 30 8% 40%;
-
     /* Custom tokens */
     --font-display: 'Merriweather', 'Noto Serif SC', Georgia, serif;
     --font-body: 'Merriweather', 'Noto Serif SC', system-ui, sans-serif;
-    /* --font-display: 'Poly Regular', 'Song', 'Baskerville', 'GenYoMin M', Georgia, serif;
-    --font-body: 'Poly Regular', 'Song', 'Baskerville', 'GenYoMin M', system-ui, sans-serif; */
-    /* --font-display: 'Instrument Serif', 'Noto Serif SC', Georgia, serif;
-    --font-body: 'Source Sans 3', 'Noto Sans SC', system-ui, sans-serif; */
-    --subtle-shadow: 0 1px 3px hsl(30 10% 15% / 0.04);
-    --hover-shadow: 0 4px 12px hsl(30 10% 15% / 0.06);
   }
 
   .dark {
@@ -62,8 +45,6 @@
     --foreground: 40 15% 90%;
     --card: 30 10% 11%;
     --card-foreground: 40 15% 90%;
-    --popover: 30 10% 8%;
-    --popover-foreground: 40 15% 90%;
     --primary: 40 15% 85%;
     --primary-foreground: 30 10% 8%;
     --secondary: 30 8% 15%;
@@ -77,14 +58,6 @@
     --border: 30 8% 20%;
     --input: 30 8% 20%;
     --ring: 30 8% 60%;
-    --sidebar-background: 30 10% 10%;
-    --sidebar-foreground: 40 15% 85%;
-    --sidebar-primary: 40 15% 85%;
-    --sidebar-primary-foreground: 30 10% 8%;
-    --sidebar-accent: 30 8% 15%;
-    --sidebar-accent-foreground: 40 15% 85%;
-    --sidebar-border: 30 8% 20%;
-    --sidebar-ring: 30 8% 60%;
   }
 }
 
@@ -95,13 +68,51 @@
     -webkit-user-select: none;
   }
 
+  /* Keyboard users still need to see where they are */
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-body);
   }
 
+  /* Display type is tracked per locale: the Latin serif wants optical
+     tightening at large sizes, CJK wants a little air between glyphs.
+     useLocale keeps <html lang> in sync, so this follows the visible copy. */
   h1, h2, h3, h4 {
     font-family: var(--font-display);
+    font-optical-sizing: auto;
+    letter-spacing: -0.015em;
+  }
+
+  html[lang^="zh"] h1,
+  html[lang^="zh"] h2,
+  html[lang^="zh"] h3,
+  html[lang^="zh"] h4 {
+    letter-spacing: 0.03em;
+  }
+}
+
+@layer components {
+  /* The hero name is set much larger than any heading, so it takes more.
+     The heading is named explicitly because it has tracking rules of its
+     own — and a rule matching an element beats whatever the element would
+     inherit. Left to inherit, the heading would track at the heading size
+     while the shadow layer behind it, a sibling copy of the same glyphs,
+     tracked at the name size: the two drift apart by one glyph's worth per
+     character, which a two-character CJK name hides and a nine-character
+     Latin one ends 11px out of step. */
+  .hero-name,
+  .hero-name h1 {
+    letter-spacing: -0.03em;
+  }
+
+  html[lang^="zh"] .hero-name,
+  html[lang^="zh"] .hero-name h1 {
+    letter-spacing: 0.05em;
   }
 }
 
@@ -110,23 +121,69 @@
     @apply px-[clamp(1.5rem,28.125vw_-_12rem,6rem)] py-[clamp(4rem,8.333vw_+_2rem,6rem)];
   }
 
+  /* Loose copy carries its own soft ground. The sheet above the hero is
+     see-through, so text that is not inside a card would otherwise sit
+     directly on whatever is behind it. The bloom bleeds past the text box so
+     neighbouring blocks merge into one patch instead of reading as separate
+     highlights. */
+  .text-bloom {
+    position: relative;
+  }
+
+  .text-bloom::before {
+    content: '';
+    position: absolute;
+    /* A small bleed, so a block's ground stays around that block instead of
+       spreading across the one next to it. The sheet clips overflow, so it
+       cannot reach the page edge either. */
+    inset: -1.25rem -1.5rem;
+    z-index: -1;
+    pointer-events: none;
+    background-color: hsl(var(--background));
+    /* A block under a wide blur rather than a shaped gradient: at this size
+       the blur keeps the middle of the ground short of full opacity, so the
+       hero stays legible *through* it and the ground reads as haze. Gradients
+       and gradients-of-bands all reach full opacity in the middle, which cuts
+       a rectangle out of whatever is behind the copy instead.
+       Nothing else here should be blamed for that: if Safari reports a dark
+       seam between sections again, this blur is the suspect, and the swap is
+       the same inset with crossed gradients faded over the whole bleed. */
+    filter: blur(24px);
+  }
+
   .underline-hover {
     position: relative;
     display: inline-block;
   }
 
+  /* Two states, two languages: the pointer gets a thin line that grows and
+     retracts, the section you are reading gets a heavy line that simply is
+     there. Tops align, so the heavy line reads as the same rule, pressed. */
   .underline-hover::after {
     content: '';
     position: absolute;
     bottom: -2px;
     left: 0;
     width: 0;
-    height: 2px;
-    background-color: currentColor;
-    transition: width 0.3s ease;
+    height: 1px;
+    background-color: hsl(var(--muted-foreground));
+    /* every property that differs between hovered and current has to move,
+       or the change reads as a jump rather than a press */
+    transition:
+      width 0.25s ease,
+      height 0.25s ease,
+      bottom 0.25s ease,
+      background-color 0.25s ease;
   }
 
   .underline-hover:hover::after {
     width: 100%;
+  }
+
+  .underline-hover[data-active="true"]::after {
+    bottom: -3px;
+    width: 100%;
+    height: 2px;
+    background-color: hsl(var(--foreground));
   }
 }

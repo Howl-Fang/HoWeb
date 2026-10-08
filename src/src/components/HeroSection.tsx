@@ -11,6 +11,7 @@ import type { Translations } from "@/i18n/translations";
 import { useEffect, useLayoutEffect, useRef } from "react";
 import ParticlePattern from "./ParticlePattern";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import { createPointerFilter } from "@/lib/pointer";
 
 const ease: Easing = "easeOut";
 
@@ -32,31 +33,14 @@ const nameContainer: Variants = {
   visible: { transition: { delayChildren: 0.2, staggerChildren: 0.045 } },
 };
 
+const charEntrance = { duration: 0.65, ease };
+
 const nameChar: Variants = {
-  hidden: {
-    opacity: 0,
-    y: "0.45em",
-    filter: "blur(12px)",
-  },
-  visible: {
-    opacity: 1,
-    y: 0,
-    filter: "blur(0px)",
-    transition: { duration: 0.65, ease },
-  },
+  hidden: { opacity: 0, y: "0.45em", filter: "blur(12px)" },
+  visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: charEntrance },
 };
 
-const shadowChar: Variants = {
-  hidden: {
-    opacity: 0,
-    y: "0.45em",
-  },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.65, ease },
-  },
-};
+
 
 const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
   const nameRef = useRef<HTMLDivElement>(null);
@@ -72,20 +56,11 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
   const tiltX = useSpring(targetTiltX, { stiffness: 150, damping: 20, mass: 0.5 });
   const tiltY = useSpring(targetTiltY, { stiffness: 150, damping: 20, mass: 0.5 });
 
-  const shadowX1 = useTransform(shadowX, (v) => `${v}px`);
-  const shadowY1 = useTransform(shadowY, (v) => `${v}px`);
-  const shadowX2 = useTransform(shadowX, (v) => `${v * 2}px`);
-  const shadowY2 = useTransform(shadowY, (v) => `${v * 2}px`);
-  const shadowX3 = useTransform(shadowX, (v) => `${v * 3}px`);
-  const shadowY3 = useTransform(shadowY, (v) => `${v * 3}px`);
-
+  // One offset, in px, for all three shadow layers; each layer scales it in
+  // the text-shadow itself, so the layers stay readable as a list
   const shadowVars = {
-    "--shadow-x": shadowX1,
-    "--shadow-y": shadowY1,
-    "--shadow-x2": shadowX2,
-    "--shadow-y2": shadowY2,
-    "--shadow-x3": shadowX3,
-    "--shadow-y3": shadowY3,
+    "--shadow-x": useTransform(shadowX, (v) => `${v}px`),
+    "--shadow-y": useTransform(shadowY, (v) => `${v}px`),
   } as MotionStyle;
 
   useEffect(() => {
@@ -96,15 +71,7 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
       targetTiltY.set(0);
     };
 
-    // Unknown/empty pointerType means the browser cannot classify the pointer,
-    // so fall back to the capability media query
-    const supportsFinePointer = window.matchMedia("(pointer: fine)").matches;
-
-    const canUsePointer = (event: PointerEvent) => {
-      if (event.pointerType === "mouse" || event.pointerType === "pen") return true;
-      if (event.pointerType === "touch") return false;
-      return supportsFinePointer;
-    };
+    const canUsePointer = createPointerFilter();
 
     const handlePointerMove = (e: PointerEvent) => {
       if (!canUsePointer(e) || !nameRef.current) return;
@@ -180,17 +147,14 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
 
   return (
     <section className="relative isolate flex min-h-screen flex-col justify-center overflow-hidden section-padding pt-32">
-      {isLandscape ? (
-        <ParticlePattern
-          active={!loading}
-          className="absolute right-[20%] bottom-[30%] -z-10 aspect-square w-[min(130vh,80vw,1150px)] translate-x-1/2 translate-y-1/2"
-        />
-      ) : (
-        <ParticlePattern
-          active={!loading}
-          className="absolute right-0 top-[64%] -z-10 aspect-square w-[min(115vw,70vh)] translate-x-1/2 -translate-y-1/2"
-        />
-      )}
+      <ParticlePattern
+        active={!loading}
+        className={`absolute -z-10 aspect-square translate-x-1/2 ${
+          isLandscape
+            ? "right-[20%] bottom-[30%] w-[min(130vh,80vw,1150px)] translate-y-1/2"
+            : "right-0 top-[64%] w-[min(115vw,70vh)] -translate-y-1/2"
+        }`}
+      />
       <div className={`relative z-10 max-w-2xl ${isLandscape ? "" : "-top-12"}`}>
         <motion.p
           custom={0.05}
@@ -210,43 +174,34 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
               rotateY: tiltY,
               transformPerspective: 800,
             }}
-            className={`relative w-fit max-w-full whitespace-nowrap font-display leading-tight mb-6 ${
+            className={`hero-name relative w-fit max-w-full whitespace-nowrap font-display leading-tight mb-6 ${
               isLandscape
                 ? "text-[clamp(3rem,9.375vw,6rem)]"
                 : "text-[clamp(4.5rem,14.0625vw,9rem)]"
             }`}
           >
-            <motion.span
-              aria-hidden="true"
-              initial="hidden"
-              animate={loading ? "hidden" : "visible"}
-              variants={nameContainer}
-              className="absolute inset-0 block text-transparent
-                         [text-shadow:var(--shadow-x)_var(--shadow-y)_10px_rgba(0,0,0,0.3),var(--shadow-x2)_var(--shadow-y2)_20px_rgba(0,0,0,0.2),var(--shadow-x3)_var(--shadow-y3)_30px_rgba(0,0,0,0.1)]
-                         dark:[text-shadow:var(--shadow-x)_var(--shadow-y)_10px_rgba(255,255,255,0.3),var(--shadow-x2)_var(--shadow-y2)_20px_rgba(255,255,255,0.2),var(--shadow-x3)_var(--shadow-y3)_30px_rgba(255,255,255,0.12),var(--shadow-x)_var(--shadow-y)_8px_rgba(0,0,0,0.55)]"
-            >
-              {Array.from(t.hero.name).map((char, i) => (
-                <motion.span
-                  key={`shadow-${char}-${i}`}
-                  variants={shadowChar}
-                  className="inline-block"
-                >
-                  {char === " " ? "\u00A0" : char}
-                </motion.span>
-              ))}
-            </motion.span>
+            {/* The shadow is on the heading itself rather than on a second
+                layer holding a transparent copy of the glyphs. Safari painted
+                nothing at all for that copy — not one pixel differed between
+                having it and not — while the same declaration on the heading
+                paints everywhere. One layer also means the two can no longer
+                disagree about what they spell.
+
+                Every layer blurs wider than it is offset. Offset past the
+                blur means each stroke keeps a hard-edged copy of itself a few
+                pixels lower, which reads as doubled type instead of a shadow.
+                Blurring wide costs a little spill past the glyphs, so the
+                outer layers stay faint enough that it never reads as a halo */}
             <motion.h1
               initial="hidden"
               animate={loading ? "hidden" : "visible"}
               variants={nameContainer}
-              className="relative text-foreground"
+              className="relative text-foreground
+                         [text-shadow:var(--shadow-x)_var(--shadow-y)_12px_rgba(0,0,0,0.18),calc(var(--shadow-x)*2)_calc(var(--shadow-y)*2)_24px_rgba(0,0,0,0.1),calc(var(--shadow-x)*3)_calc(var(--shadow-y)*3)_36px_rgba(0,0,0,0.05)]
+                         dark:[text-shadow:var(--shadow-x)_var(--shadow-y)_12px_rgba(255,255,255,0.2),calc(var(--shadow-x)*2)_calc(var(--shadow-y)*2)_24px_rgba(255,255,255,0.11),calc(var(--shadow-x)*3)_calc(var(--shadow-y)*3)_36px_rgba(255,255,255,0.06)]"
             >
               {Array.from(t.hero.name).map((char, i) => (
-                <motion.span
-                  key={`${char}-${i}`}
-                  variants={nameChar}
-                  className="inline-block"
-                >
+                <motion.span key={`${char}-${i}`} variants={nameChar} className="inline-block">
                   {char === " " ? "\u00A0" : char}
                 </motion.span>
               ))}
@@ -267,7 +222,7 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
           initial="hidden"
           animate={loading ? "hidden" : "visible"}
           variants={fadeUp}
-          className="mt-10 h-px w-16 bg-border"
+          className="mt-10 h-px w-24 bg-gradient-to-r from-muted-foreground/50 to-transparent"
         />
       </div>
     </section>

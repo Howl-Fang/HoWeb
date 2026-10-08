@@ -4,7 +4,7 @@ const translations = {
   en: {
     head: {
       title: "Howl Fang",
-      description: "Personal website of Howl Fang",
+      description: "Howl Fang — engineering with an eye for design",
     },
     nav: {
       about: "About",
@@ -12,14 +12,13 @@ const translations = {
       contact: "Contact",
     },
     hero: {
-      greeting: "Hello, Here's",
+      greeting: "Hello, I'm",
       name: "Howl Fang",
-      tagline: "Soul Traveler",
+      tagline: "Engineering with an eye for design",
     },
     about: {
       title: "About",
-      p1: "We let our little boat drift where it would, over the thousand acres of watery waste.",
-      // p1: "My life is in a continuous \"beta version.\"",
+      p1: "I build software end to end — the systems behind it and the surface you touch.",
       p2: "My life is in a continuous \"beta version.\"",
     },
     projects: {
@@ -29,7 +28,7 @@ const translations = {
     },
     contact: {
       title: "Get in Touch",
-      description: "Be free to reach me. Query, collaboration or just chat are welcomed",
+      description: "Questions, collaboration, or just a chat — all welcome.",
       email: "Email",
       placeholder: "Howl.Fang@outlook.com",
       placeholder2: "me@Howl-Fang.win",
@@ -41,7 +40,7 @@ const translations = {
   zh: {
     head: {
       title: "汤圆圆",
-      description: "汤圆圆的个人网站",
+      description: "汤圆圆 —— 工程，也讲究设计",
     },
     nav: {
       about: "关于",
@@ -51,12 +50,12 @@ const translations = {
     hero: {
       greeting: "你好，我是",
       name: "汤圆圆",
-      tagline: "灵魂行者",
+      tagline: "工程，也讲究设计",
     },
     about: {
       title: "关于我",
-      p1: "纵一苇之所如，凌万顷之茫然。",
-      p2: "开发生活的新方向",
+      p1: "我做完整的软件：背后的系统，和你碰到的那一层。",
+      p2: "我的人生一直处于 beta 版本。",
     },
     projects: {
       title: "项目",

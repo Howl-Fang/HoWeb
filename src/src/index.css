@@ -161,30 +161,24 @@
   .text-bloom::before {
     content: '';
     position: absolute;
-    /* the horizontal bleed stays inside section-padding, so it can never
-       push a horizontal scrollbar onto the page */
-    inset: -1.75rem -1.5rem;
+    /* the sheet clips its overflow, so a bleed wider than section-padding
+       still cannot put a horizontal scrollbar on the page */
+    inset: -3.5rem -4.5rem;
     z-index: -1;
     pointer-events: none;
-    /* Two crossed bands rather than one blurred block: no filter means no
-       Safari blur-clipping to leave hard edges on, and the fade lands inside
-       the bleed (28px / 24px), so every line of the text sits on the solid
-       core instead of a slice of a radial falloff. */
-    background-image:
-      linear-gradient(
-        to right,
-        transparent 0,
-        hsl(var(--background)) 1.5rem,
-        hsl(var(--background)) calc(100% - 1.5rem),
-        transparent 100%
-      ),
-      linear-gradient(
-        to bottom,
-        transparent 0,
-        hsl(var(--background)) 1.75rem,
-        hsl(var(--background)) calc(100% - 1.75rem),
-        transparent 100%
-      );
+    /* A radial falloff, not a banded or blurred box. Two crossed bands kept
+       the solid core over the text but left the corners square, so a short
+       heading read as a rectangle of ground with the words in it; blurring a
+       block is worse still, since it rounds the corners of a shape that is
+       still there. farthest-side puts the end of the fade on the element's
+       own edge, so nothing is cut off, and the falloff is longest where the
+       corners used to show. Still no filter, so Safari has nothing to clip. */
+    background-image: radial-gradient(
+      ellipse farthest-side at center,
+      hsl(var(--background)) 0%,
+      hsl(var(--background)) 50%,
+      hsl(var(--background) / 0) 100%
+    );
   }
 
   .underline-hover {

@@ -156,7 +156,13 @@
     width: 0;
     height: 1px;
     background-color: hsl(var(--muted-foreground));
-    transition: width 0.25s ease;
+    /* every property that differs between hovered and current has to move,
+       or the change reads as a jump rather than a press */
+    transition:
+      width 0.25s ease,
+      height 0.25s ease,
+      bottom 0.25s ease,
+      background-color 0.25s ease;
   }
 
   .underline-hover:hover::after {

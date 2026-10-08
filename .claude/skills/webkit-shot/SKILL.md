@@ -11,8 +11,10 @@ not launch on this machine — it dies with `Bus error: 10`. This drives the
 *system* WebKit through WKWebView instead: the same engine as Safari, with
 nothing to download. It needs `swiftc`, which is already present.
 
-**Run it only when the user asks for a Safari check.** It is not part of the
-usual fix → verify loop.
+**Run it when the user asks for a Safari check, and when a Safari-only report
+needs a second opinion** — it has already caught one real bug (a shadow layer
+that painted nothing) and cleared a false lead. It is not part of the routine
+fix → verify loop.
 
 ## Build and run
 
@@ -61,8 +63,11 @@ Behaviour established in this build:
 - a second layer holding a `color: transparent` copy of the glyphs painted
   nothing, even though its computed `text-shadow` was correct; the same
   declaration on the `<h1>` paints (see `HeroSection`)
-- `overflow-x: clip` on an ancestor changed no pixel of the output — the clip
-  is not what was cutting anything
+- `overflow-x: clip` on an ancestor changes no pixel of the output, and the
+  ramp outside that box keeps painting — yet Safari.app drops exactly that
+  ramp, and Firefox draws it as the spec says. So this engine cannot settle
+  clipping questions: it follows the spec where the Safari bug lives outside
+  it. Take the user's report as the measurement in those cases
 - `filter: blur()` paints normally, including its spill past the element box
 - a tint of the background colour over a flat background is invisible by
   construction: to test a gradient like the one above the sheet, the thing

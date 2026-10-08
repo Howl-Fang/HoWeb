@@ -101,10 +101,7 @@ const ProjectCard = ({ project, locale, index, hoveredId, onHoverChange }: Proje
                   className="inline-flex items-center"
                 >
                   <Github className="w-4 h-4" />
-                  <span className="hidden sm:inline">
-                    {/* {locale === "zh" ? "源代码" : "GitHub"} */}
-                    {"GitHub"}
-                  </span>
+                  <span className="hidden sm:inline">GitHub</span>
                 </a>
               </Button>
             )}

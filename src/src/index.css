@@ -133,33 +133,22 @@
   .text-bloom::before {
     content: '';
     position: absolute;
-    /* the sheet clips its overflow, so a bleed wider than section-padding
-       still cannot put a horizontal scrollbar on the page */
-    inset: -3.5rem -4.5rem;
+    /* A small bleed, so a block's ground stays around that block instead of
+       spreading across the one next to it. The sheet clips overflow, so it
+       cannot reach the page edge either. */
+    inset: -1.25rem -1.5rem;
     z-index: -1;
     pointer-events: none;
-    /* Two crossed bands, so the ground is a rectangle that covers the text
-       block corner to corner. An ellipse leaves the corners thin, and those
-       corners are exactly where the hero shows through from behind the
-       see-through sheet — the ground has to be there before the fade starts.
-       The fade is spent entirely on the bleed (64px across, 48px down), so
-       every glyph sits on the solid core and the edge meets whatever is
-       behind it gradually. No filter, so Safari has nothing to clip. */
-    background-image:
-      linear-gradient(
-        to right,
-        hsl(var(--background) / 0) 0,
-        hsl(var(--background)) 4rem,
-        hsl(var(--background)) calc(100% - 4rem),
-        hsl(var(--background) / 0) 100%
-      ),
-      linear-gradient(
-        to bottom,
-        hsl(var(--background) / 0) 0,
-        hsl(var(--background)) 3rem,
-        hsl(var(--background)) calc(100% - 3rem),
-        hsl(var(--background) / 0) 100%
-      );
+    background-color: hsl(var(--background));
+    /* A block under a wide blur rather than a shaped gradient: at this size
+       the blur keeps the middle of the ground short of full opacity, so the
+       hero stays legible *through* it and the ground reads as haze. Gradients
+       and gradients-of-bands all reach full opacity in the middle, which cuts
+       a rectangle out of whatever is behind the copy instead.
+       Nothing else here should be blamed for that: if Safari reports a dark
+       seam between sections again, this blur is the suspect, and the swap is
+       the same inset with crossed gradients faded over the whole bleed. */
+    filter: blur(24px);
   }
 
   .underline-hover {

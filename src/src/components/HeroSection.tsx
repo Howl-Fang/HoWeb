@@ -147,15 +147,6 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
 
   return (
     <section className="relative isolate flex min-h-screen flex-col justify-center overflow-hidden section-padding pt-32">
-      {/* Fades the hero out into the sheet that scrolls over it. It lives here,
-          inside the sticky layer, rather than as an overlay on the sheet above:
-          a translucent layer painted over a sticky one is composited
-          separately, and Safari rasterised the gradient away, leaving the
-          sheet's top edge as a hard line across whatever was behind it. */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-64 bg-gradient-to-t from-background/70 to-transparent"
-      />
       <ParticlePattern
         active={!loading}
         className={`absolute -z-10 aspect-square translate-x-1/2 ${

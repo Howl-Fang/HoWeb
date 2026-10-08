@@ -154,14 +154,28 @@
     position: absolute;
     /* the horizontal bleed stays inside section-padding, so it can never
        push a horizontal scrollbar onto the page */
-    inset: -1.25rem -1.5rem;
+    inset: -1.75rem -1.5rem;
     z-index: -1;
     pointer-events: none;
-    background-color: hsl(var(--background));
-    /* a solid block with a wide blur rather than a radial gradient: every
-       line of a paragraph then sits on the same ground, instead of the first
-       and last lines getting a thinner slice of an ellipse */
-    filter: blur(24px);
+    /* Two crossed bands rather than one blurred block: no filter means no
+       Safari blur-clipping to leave hard edges on, and the fade lands inside
+       the bleed (28px / 24px), so every line of the text sits on the solid
+       core instead of a slice of a radial falloff. */
+    background-image:
+      linear-gradient(
+        to right,
+        transparent 0,
+        hsl(var(--background)) 1.5rem,
+        hsl(var(--background)) calc(100% - 1.5rem),
+        transparent 100%
+      ),
+      linear-gradient(
+        to bottom,
+        transparent 0,
+        hsl(var(--background)) 1.75rem,
+        hsl(var(--background)) calc(100% - 1.75rem),
+        transparent 100%
+      );
   }
 
   .underline-hover {

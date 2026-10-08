@@ -216,14 +216,17 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
                 : "text-[clamp(4.5rem,14.0625vw,9rem)]"
             }`}
           >
+            {/* Each layer's blur stays below its own offset, so the shadow
+                reads as a copy of the glyphs sitting behind them rather than
+                a halo spreading wider than the title */}
             <motion.span
               aria-hidden="true"
               initial="hidden"
               animate={loading ? "hidden" : "visible"}
               variants={nameContainer}
               className="absolute inset-0 block text-transparent
-                         [text-shadow:var(--shadow-x)_var(--shadow-y)_10px_rgba(0,0,0,0.28),var(--shadow-x2)_var(--shadow-y2)_24px_rgba(0,0,0,0.16),var(--shadow-x3)_var(--shadow-y3)_44px_rgba(0,0,0,0.08)]
-                         dark:[text-shadow:var(--shadow-x)_var(--shadow-y)_10px_rgba(255,255,255,0.28),var(--shadow-x2)_var(--shadow-y2)_24px_rgba(255,255,255,0.17),var(--shadow-x3)_var(--shadow-y3)_44px_rgba(255,255,255,0.1),var(--shadow-x)_var(--shadow-y)_8px_rgba(0,0,0,0.55)]"
+                         [text-shadow:var(--shadow-x)_var(--shadow-y)_8px_rgba(0,0,0,0.3),var(--shadow-x2)_var(--shadow-y2)_16px_rgba(0,0,0,0.15),var(--shadow-x3)_var(--shadow-y3)_26px_rgba(0,0,0,0.07)]
+                         dark:[text-shadow:var(--shadow-x)_var(--shadow-y)_8px_rgba(255,255,255,0.3),var(--shadow-x2)_var(--shadow-y2)_16px_rgba(255,255,255,0.16),var(--shadow-x3)_var(--shadow-y3)_26px_rgba(255,255,255,0.09),var(--shadow-x)_var(--shadow-y)_8px_rgba(0,0,0,0.55)]"
             >
               {Array.from(t.hero.name).map((char, i) => (
                 <motion.span

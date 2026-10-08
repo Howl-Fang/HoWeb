@@ -79,7 +79,7 @@ const ProjectsSection = ({ t, locale }: ProjectsSectionProps) => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "0px 0px 60px 0px" }}
           transition={{ duration: 0.6 }}
-          className="text-bloom text-3xl md:text-4xl font-display text-card-foreground mb-8"
+          className="text-bloom w-fit text-3xl md:text-4xl font-display text-card-foreground mb-8"
         >
           {t.projects.title}
         </motion.h2>

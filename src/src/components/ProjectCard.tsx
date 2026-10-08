@@ -46,7 +46,7 @@ const ProjectCard = ({ project, locale, index, hoveredId, onHoverChange }: Proje
           duration: 0.2,
           ease: "easeOut",
         }}
-        className="relative border border-border rounded-lg p-6 bg-card/85 backdrop-blur-sm z-10"
+        className="relative border border-border rounded-lg p-6 bg-card/75 backdrop-blur-sm z-10"
       >
         {/* Only the contents step back when a sibling is hovered: fading the
             panel itself fades its blur with it, so the card would read as

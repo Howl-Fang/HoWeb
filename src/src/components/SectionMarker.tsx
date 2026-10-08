@@ -8,7 +8,7 @@ const SectionMarker = ({ index }: { index: string }) => (
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true, margin: "-100px" }}
     transition={{ duration: 0.6 }}
-    className="mb-4 flex items-center gap-3"
+    className="text-bloom mb-4 flex w-fit items-center gap-3"
   >
     <span className="h-px w-6 bg-border" />
     <span className="font-body text-xs tracking-[0.35em] text-muted-foreground">{index}</span>

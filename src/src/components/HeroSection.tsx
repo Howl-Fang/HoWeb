@@ -198,7 +198,7 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
               variants={nameContainer}
               className="relative text-foreground
                          [text-shadow:var(--shadow-x)_var(--shadow-y)_12px_rgba(0,0,0,0.18),calc(var(--shadow-x)*2)_calc(var(--shadow-y)*2)_24px_rgba(0,0,0,0.1),calc(var(--shadow-x)*3)_calc(var(--shadow-y)*3)_36px_rgba(0,0,0,0.05)]
-                         dark:[text-shadow:var(--shadow-x)_var(--shadow-y)_12px_rgba(255,255,255,0.2),calc(var(--shadow-x)*2)_calc(var(--shadow-y)*2)_24px_rgba(255,255,255,0.11),calc(var(--shadow-x)*3)_calc(var(--shadow-y)*3)_36px_rgba(255,255,255,0.06),var(--shadow-x)_var(--shadow-y)_8px_rgba(0,0,0,0.55)]"
+                         dark:[text-shadow:var(--shadow-x)_var(--shadow-y)_12px_rgba(255,255,255,0.2),calc(var(--shadow-x)*2)_calc(var(--shadow-y)*2)_24px_rgba(255,255,255,0.11),calc(var(--shadow-x)*3)_calc(var(--shadow-y)*3)_36px_rgba(255,255,255,0.06)]"
             >
               {Array.from(t.hero.name).map((char, i) => (
                 <motion.span key={`${char}-${i}`} variants={nameChar} className="inline-block">

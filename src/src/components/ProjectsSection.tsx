@@ -71,7 +71,7 @@ const ProjectsSection = ({ t, locale }: ProjectsSectionProps) => {
   }, [columns, locale]);
 
   return (
-    <section id="projects" className="section-padding bg-card/50">
+    <section id="projects" className="section-padding">
       <div className="max-w-3xl mx-auto">
         <SectionMarker index="02" />
         <motion.h2

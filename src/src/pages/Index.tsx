@@ -98,9 +98,11 @@ function Index() {
             copy. What keeps the copy readable is spent locally instead — a
             bloom behind loose text, a blur on each card. */}
         <div className="relative z-10 overflow-x-clip bg-background/70">
+          {/* Ramps from the sheet's own tint to nothing, so the top of the
+              sheet bleeds into the hero instead of starting at a hard line */}
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute bottom-full left-0 h-40 w-full bg-gradient-to-t from-background to-transparent"
+            className="pointer-events-none absolute bottom-full left-0 h-64 w-full bg-gradient-to-t from-background/70 to-transparent"
           />
           <AboutSection t={t} />
           <ProjectsSection t={t} locale={locale} />

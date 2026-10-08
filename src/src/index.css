@@ -125,12 +125,21 @@
 }
 
 @layer components {
-  /* The hero name is set much larger than any heading, so it takes more */
-  .hero-name {
+  /* The hero name is set much larger than any heading, so it takes more.
+     The heading is named explicitly because it has tracking rules of its
+     own — and a rule matching an element beats whatever the element would
+     inherit. Left to inherit, the heading would track at the heading size
+     while the shadow layer behind it, a sibling copy of the same glyphs,
+     tracked at the name size: the two drift apart by one glyph's worth per
+     character, which a two-character CJK name hides and a nine-character
+     Latin one ends 11px out of step. */
+  .hero-name,
+  .hero-name h1 {
     letter-spacing: -0.03em;
   }
 
-  html[lang^="zh"] .hero-name {
+  html[lang^="zh"] .hero-name,
+  html[lang^="zh"] .hero-name h1 {
     letter-spacing: 0.05em;
   }
 }

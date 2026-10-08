@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import patternUrl from "../../resources/ico.svg";
+import { createPointerFilter } from "@/lib/pointer";
 
 interface ParticlePatternProps {
   active: boolean;
@@ -27,16 +28,19 @@ const FAR_REPEL_SCALE = 0.4;
 const FAR_SPRING_SCALE = 0.55;
 const FAR_DRIFT_SCALE = 0.6;
 
-const readColor = (token: string, alpha: number, fallback: string) => {
+/** A token from the stylesheet as hsla, so the canvas follows the theme */
+const readColor = (token: string, alpha: number) => {
+  const fallback = `hsla(0, 0%, 50%, ${alpha})`;
   if (typeof window === "undefined") return fallback;
 
-  const raw = getComputedStyle(document.documentElement).getPropertyValue(token).trim();
-  const parts = raw.split(/\s+/);
+  const parts = getComputedStyle(document.documentElement)
+    .getPropertyValue(token)
+    .trim()
+    .split(/\s+/);
 
-  if (parts.length >= 3) {
-    return `hsla(${parts[0]}, ${parts[1]}, ${parts[2]}, ${alpha})`;
-  }
-  return fallback;
+  return parts.length >= 3
+    ? `hsla(${parts[0]}, ${parts[1]}, ${parts[2]}, ${alpha})`
+    : fallback;
 };
 
 const ParticlePattern = ({ active, className }: ParticlePatternProps) => {
@@ -57,20 +61,15 @@ const ParticlePattern = ({ active, className }: ParticlePatternProps) => {
     if (!ctx) return;
 
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const canInteract = window.matchMedia("(pointer: fine)").matches;
 
     let width = 0;
     let height = 0;
     let patternSize = 0;
     let dpr = 1;
     // The near layer carries the accent, the far layer stays neutral dust
-    let nearColor = readColor("--muted-foreground", PARTICLE_ALPHA, `hsla(0, 0%, 50%, ${PARTICLE_ALPHA})`);
+    let nearColor = readColor("--muted-foreground", PARTICLE_ALPHA);
     const farAlpha = PARTICLE_ALPHA * FAR_ALPHA_SCALE;
-    let farColor = readColor(
-      "--muted-foreground",
-      farAlpha,
-      `hsla(0, 0%, 50%, ${farAlpha})`
-    );
+    let farColor = readColor("--muted-foreground", farAlpha);
 
     let image: HTMLImageElement | null = null;
     let particleCount = 0;
@@ -308,13 +307,7 @@ const ParticlePattern = ({ active, className }: ParticlePatternProps) => {
       draw();
     };
 
-    // Unknown/empty pointerType means the browser cannot classify the pointer,
-    // so fall back to the capability media query
-    const canUsePointer = (event: PointerEvent) => {
-      if (event.pointerType === "mouse" || event.pointerType === "pen") return true;
-      if (event.pointerType === "touch") return false;
-      return canInteract;
-    };
+    const canUsePointer = createPointerFilter();
 
     const handlePointerMove = (event: PointerEvent) => {
       if (!canUsePointer(event)) return;
@@ -345,8 +338,8 @@ const ParticlePattern = ({ active, className }: ParticlePatternProps) => {
     visibilityObserver.observe(container);
 
     const themeObserver = new MutationObserver(() => {
-      nearColor = readColor("--muted-foreground", PARTICLE_ALPHA, `hsla(0, 0%, 50%, ${PARTICLE_ALPHA})`);
-      farColor = readColor("--muted-foreground", farAlpha, `hsla(0, 0%, 50%, ${farAlpha})`);
+      nearColor = readColor("--muted-foreground", PARTICLE_ALPHA);
+      farColor = readColor("--muted-foreground", farAlpha);
       if (reducedMotion) draw();
     });
     themeObserver.observe(document.documentElement, {

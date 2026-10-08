@@ -11,6 +11,7 @@ import type { Translations } from "@/i18n/translations";
 import { useEffect, useLayoutEffect, useRef } from "react";
 import ParticlePattern from "./ParticlePattern";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import { createPointerFilter } from "@/lib/pointer";
 
 const ease: Easing = "easeOut";
 
@@ -32,31 +33,30 @@ const nameContainer: Variants = {
   visible: { transition: { delayChildren: 0.2, staggerChildren: 0.045 } },
 };
 
+const charEntrance = { duration: 0.65, ease };
+
 const nameChar: Variants = {
-  hidden: {
-    opacity: 0,
-    y: "0.45em",
-    filter: "blur(12px)",
-  },
-  visible: {
-    opacity: 1,
-    y: 0,
-    filter: "blur(0px)",
-    transition: { duration: 0.65, ease },
-  },
+  hidden: { opacity: 0, y: "0.45em", filter: "blur(12px)" },
+  visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: charEntrance },
 };
 
+// The same entrance without the blur: the shadow layer has to keep the glyph
+// edges it is repeating, or it arrives as a smudge
 const shadowChar: Variants = {
-  hidden: {
-    opacity: 0,
-    y: "0.45em",
-  },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.65, ease },
-  },
+  hidden: { opacity: 0, y: "0.45em" },
+  visible: { opacity: 1, y: 0, transition: charEntrance },
 };
+
+/** The name, one span per character, in whichever layer the caller styles */
+const NameChars = ({ name, variants }: { name: string; variants: Variants }) => (
+  <>
+    {Array.from(name).map((char, i) => (
+      <motion.span key={`${char}-${i}`} variants={variants} className="inline-block">
+        {char === " " ? "\u00A0" : char}
+      </motion.span>
+    ))}
+  </>
+);
 
 const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
   const nameRef = useRef<HTMLDivElement>(null);
@@ -72,20 +72,11 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
   const tiltX = useSpring(targetTiltX, { stiffness: 150, damping: 20, mass: 0.5 });
   const tiltY = useSpring(targetTiltY, { stiffness: 150, damping: 20, mass: 0.5 });
 
-  const shadowX1 = useTransform(shadowX, (v) => `${v}px`);
-  const shadowY1 = useTransform(shadowY, (v) => `${v}px`);
-  const shadowX2 = useTransform(shadowX, (v) => `${v * 2}px`);
-  const shadowY2 = useTransform(shadowY, (v) => `${v * 2}px`);
-  const shadowX3 = useTransform(shadowX, (v) => `${v * 3}px`);
-  const shadowY3 = useTransform(shadowY, (v) => `${v * 3}px`);
-
+  // One offset, in px, for all three shadow layers; each layer scales it in
+  // the text-shadow itself, so the layers stay readable as a list
   const shadowVars = {
-    "--shadow-x": shadowX1,
-    "--shadow-y": shadowY1,
-    "--shadow-x2": shadowX2,
-    "--shadow-y2": shadowY2,
-    "--shadow-x3": shadowX3,
-    "--shadow-y3": shadowY3,
+    "--shadow-x": useTransform(shadowX, (v) => `${v}px`),
+    "--shadow-y": useTransform(shadowY, (v) => `${v}px`),
   } as MotionStyle;
 
   useEffect(() => {
@@ -96,15 +87,7 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
       targetTiltY.set(0);
     };
 
-    // Unknown/empty pointerType means the browser cannot classify the pointer,
-    // so fall back to the capability media query
-    const supportsFinePointer = window.matchMedia("(pointer: fine)").matches;
-
-    const canUsePointer = (event: PointerEvent) => {
-      if (event.pointerType === "mouse" || event.pointerType === "pen") return true;
-      if (event.pointerType === "touch") return false;
-      return supportsFinePointer;
-    };
+    const canUsePointer = createPointerFilter();
 
     const handlePointerMove = (e: PointerEvent) => {
       if (!canUsePointer(e) || !nameRef.current) return;
@@ -180,17 +163,14 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
 
   return (
     <section className="relative isolate flex min-h-screen flex-col justify-center overflow-hidden section-padding pt-32">
-      {isLandscape ? (
-        <ParticlePattern
-          active={!loading}
-          className="absolute right-[20%] bottom-[30%] -z-10 aspect-square w-[min(130vh,80vw,1150px)] translate-x-1/2 translate-y-1/2"
-        />
-      ) : (
-        <ParticlePattern
-          active={!loading}
-          className="absolute right-0 top-[64%] -z-10 aspect-square w-[min(115vw,70vh)] translate-x-1/2 -translate-y-1/2"
-        />
-      )}
+      <ParticlePattern
+        active={!loading}
+        className={`absolute -z-10 aspect-square translate-x-1/2 ${
+          isLandscape
+            ? "right-[20%] bottom-[30%] w-[min(130vh,80vw,1150px)] translate-y-1/2"
+            : "right-0 top-[64%] w-[min(115vw,70vh)] -translate-y-1/2"
+        }`}
+      />
       <div className={`relative z-10 max-w-2xl ${isLandscape ? "" : "-top-12"}`}>
         <motion.p
           custom={0.05}
@@ -227,18 +207,10 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
               animate={loading ? "hidden" : "visible"}
               variants={nameContainer}
               className="absolute inset-0 block text-transparent
-                         [text-shadow:var(--shadow-x)_var(--shadow-y)_12px_rgba(0,0,0,0.18),var(--shadow-x2)_var(--shadow-y2)_24px_rgba(0,0,0,0.1),var(--shadow-x3)_var(--shadow-y3)_36px_rgba(0,0,0,0.05)]
-                         dark:[text-shadow:var(--shadow-x)_var(--shadow-y)_12px_rgba(255,255,255,0.2),var(--shadow-x2)_var(--shadow-y2)_24px_rgba(255,255,255,0.11),var(--shadow-x3)_var(--shadow-y3)_36px_rgba(255,255,255,0.06),var(--shadow-x)_var(--shadow-y)_8px_rgba(0,0,0,0.55)]"
+                         [text-shadow:var(--shadow-x)_var(--shadow-y)_12px_rgba(0,0,0,0.18),calc(var(--shadow-x)*2)_calc(var(--shadow-y)*2)_24px_rgba(0,0,0,0.1),calc(var(--shadow-x)*3)_calc(var(--shadow-y)*3)_36px_rgba(0,0,0,0.05)]
+                         dark:[text-shadow:var(--shadow-x)_var(--shadow-y)_12px_rgba(255,255,255,0.2),calc(var(--shadow-x)*2)_calc(var(--shadow-y)*2)_24px_rgba(255,255,255,0.11),calc(var(--shadow-x)*3)_calc(var(--shadow-y)*3)_36px_rgba(255,255,255,0.06),var(--shadow-x)_var(--shadow-y)_8px_rgba(0,0,0,0.55)]"
             >
-              {Array.from(t.hero.name).map((char, i) => (
-                <motion.span
-                  key={`shadow-${char}-${i}`}
-                  variants={shadowChar}
-                  className="inline-block"
-                >
-                  {char === " " ? "\u00A0" : char}
-                </motion.span>
-              ))}
+              <NameChars name={t.hero.name} variants={shadowChar} />
             </motion.span>
             <motion.h1
               initial="hidden"
@@ -246,15 +218,7 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
               variants={nameContainer}
               className="relative text-foreground"
             >
-              {Array.from(t.hero.name).map((char, i) => (
-                <motion.span
-                  key={`${char}-${i}`}
-                  variants={nameChar}
-                  className="inline-block"
-                >
-                  {char === " " ? "\u00A0" : char}
-                </motion.span>
-              ))}
+              <NameChars name={t.hero.name} variants={nameChar} />
             </motion.h1>
           </motion.div>
         </div>

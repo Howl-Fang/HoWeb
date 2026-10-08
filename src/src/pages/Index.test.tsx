@@ -20,6 +20,19 @@ describe("Index", () => {
     expect(screen.getByRole("heading", { name: "Get in Touch" })).toBeInTheDocument();
   });
 
+  it("repeats the hero name in a hidden layer behind it", () => {
+    const { container } = render(<Index />);
+
+    const [shadow, heading] = container.querySelectorAll(".hero-name > span, .hero-name h1");
+
+    expect(shadow).toHaveAttribute("aria-hidden", "true");
+    // the shadow is a copy of the glyphs with a different fill, so the two
+    // layers have to spell the same thing — including the space between them,
+    // which is a non-breaking one
+    expect(shadow.textContent).toBe(heading.textContent);
+    expect(heading.textContent).toBe("Howl\u00A0Fang");
+  });
+
   it("renders a card per project", () => {
     render(<Index />);
 

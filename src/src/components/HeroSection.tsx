@@ -40,23 +40,7 @@ const nameChar: Variants = {
   visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: charEntrance },
 };
 
-// The same entrance without the blur: the shadow layer has to keep the glyph
-// edges it is repeating, or it arrives as a smudge
-const shadowChar: Variants = {
-  hidden: { opacity: 0, y: "0.45em" },
-  visible: { opacity: 1, y: 0, transition: charEntrance },
-};
 
-/** The name, one span per character, in whichever layer the caller styles */
-const NameChars = ({ name, variants }: { name: string; variants: Variants }) => (
-  <>
-    {Array.from(name).map((char, i) => (
-      <motion.span key={`${char}-${i}`} variants={variants} className="inline-block">
-        {char === " " ? "\u00A0" : char}
-      </motion.span>
-    ))}
-  </>
-);
 
 const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
   const nameRef = useRef<HTMLDivElement>(null);
@@ -196,29 +180,31 @@ const HeroSection = ({ t, loading }: { t: Translations; loading: boolean }) => {
                 : "text-[clamp(4.5rem,14.0625vw,9rem)]"
             }`}
           >
-            {/* Every layer blurs wider than it is offset. Offset past the
+            {/* The shadow is on the heading itself rather than on a second
+                layer holding a transparent copy of the glyphs. Safari painted
+                nothing at all for that copy — not one pixel differed between
+                having it and not — while the same declaration on the heading
+                paints everywhere. One layer also means the two can no longer
+                disagree about what they spell.
+
+                Every layer blurs wider than it is offset. Offset past the
                 blur means each stroke keeps a hard-edged copy of itself a few
                 pixels lower, which reads as doubled type instead of a shadow.
                 Blurring wide costs a little spill past the glyphs, so the
                 outer layers stay faint enough that it never reads as a halo */}
-            <motion.span
-              aria-hidden="true"
-              initial="hidden"
-              animate={loading ? "hidden" : "visible"}
-              variants={nameContainer}
-              className="absolute inset-0 block text-transparent
-                         [text-shadow:var(--shadow-x)_var(--shadow-y)_12px_rgba(0,0,0,0.18),calc(var(--shadow-x)*2)_calc(var(--shadow-y)*2)_24px_rgba(0,0,0,0.1),calc(var(--shadow-x)*3)_calc(var(--shadow-y)*3)_36px_rgba(0,0,0,0.05)]
-                         dark:[text-shadow:var(--shadow-x)_var(--shadow-y)_12px_rgba(255,255,255,0.2),calc(var(--shadow-x)*2)_calc(var(--shadow-y)*2)_24px_rgba(255,255,255,0.11),calc(var(--shadow-x)*3)_calc(var(--shadow-y)*3)_36px_rgba(255,255,255,0.06),var(--shadow-x)_var(--shadow-y)_8px_rgba(0,0,0,0.55)]"
-            >
-              <NameChars name={t.hero.name} variants={shadowChar} />
-            </motion.span>
             <motion.h1
               initial="hidden"
               animate={loading ? "hidden" : "visible"}
               variants={nameContainer}
-              className="relative text-foreground"
+              className="relative text-foreground
+                         [text-shadow:var(--shadow-x)_var(--shadow-y)_12px_rgba(0,0,0,0.18),calc(var(--shadow-x)*2)_calc(var(--shadow-y)*2)_24px_rgba(0,0,0,0.1),calc(var(--shadow-x)*3)_calc(var(--shadow-y)*3)_36px_rgba(0,0,0,0.05)]
+                         dark:[text-shadow:var(--shadow-x)_var(--shadow-y)_12px_rgba(255,255,255,0.2),calc(var(--shadow-x)*2)_calc(var(--shadow-y)*2)_24px_rgba(255,255,255,0.11),calc(var(--shadow-x)*3)_calc(var(--shadow-y)*3)_36px_rgba(255,255,255,0.06),var(--shadow-x)_var(--shadow-y)_8px_rgba(0,0,0,0.55)]"
             >
-              <NameChars name={t.hero.name} variants={nameChar} />
+              {Array.from(t.hero.name).map((char, i) => (
+                <motion.span key={`${char}-${i}`} variants={nameChar} className="inline-block">
+                  {char === " " ? "\u00A0" : char}
+                </motion.span>
+              ))}
             </motion.h1>
           </motion.div>
         </div>

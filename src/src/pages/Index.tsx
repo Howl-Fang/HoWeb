@@ -1,5 +1,7 @@
 import { useLocale } from "@/i18n/useLocale";
+import { useActiveSection } from "@/hooks/useActiveSection";
 import NavBar from "@/components/NavBar";
+import ScrollProgress from "@/components/ScrollProgress";
 import HeroSection from "@/components/HeroSection";
 import AboutSection from "@/components/AboutSection";
 import ProjectsSection from "@/components/ProjectsSection";
@@ -9,9 +11,12 @@ import Footer from "@/components/Footer";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 
+const SECTION_IDS = ["about", "projects", "contact"];
+
 function Index() {
   const [loading, setLoading] = useState(true);
   const { locale, t, toggleLocale } = useLocale();
+  const activeSection = useActiveSection(SECTION_IDS);
 
   useEffect(() => {
     // 最少显示时长（毫秒）
@@ -79,15 +84,21 @@ function Index() {
         )}
       </AnimatePresence>
       <div className="relative min-h-screen bg-background">
-        <NavBar t={t} locale={locale} toggleLocale={toggleLocale} />
+        <ScrollProgress />
+        <NavBar
+          t={t}
+          locale={locale}
+          toggleLocale={toggleLocale}
+          activeSection={activeSection}
+        />
         <div className="sticky top-0 z-0 h-screen">
           <HeroSection t={t} loading={loading} />
         </div>
-        <div className="relative z-10 bg-background">
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute bottom-full left-0 h-40 w-full bg-gradient-to-t from-background to-transparent"
-          />
+        {/* See-through, not frosted: the pinned hero stays legible behind the
+            copy. What keeps the copy readable is spent locally instead — a
+            bloom behind loose text, a blur on each card. The fade into the
+            sheet is the sheet's own background; see .sheet-fade. */}
+        <div className="relative z-10 sheet-fade">
           <AboutSection t={t} />
           <ProjectsSection t={t} locale={locale} />
           <ContactSection t={t} />

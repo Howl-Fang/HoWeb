@@ -121,6 +121,25 @@
     @apply px-[clamp(1.5rem,28.125vw_-_12rem,6rem)] py-[clamp(4rem,8.333vw_+_2rem,6rem)];
   }
 
+  /* The sheet over the hero carries its own fade at the top, inside its own
+     box: the box is pulled up and padded back down so the tint ramps from
+     nothing to the sheet's 70% across the 256px above the copy.
+     It used to be a separate strip above the sheet, and that cost twice —
+     two elements meeting at the same 70% left a seam that some machines drew
+     as a band, and a translucent element sitting outside its parent's box is
+     something a few machines dropped outright, which left a hard edge with no
+     fade at all. One element, one gradient, nothing outside a box. */
+  .sheet-fade {
+    margin-top: -16rem;
+    padding-top: 16rem;
+    background-image: linear-gradient(
+      to bottom,
+      hsl(var(--background) / 0),
+      hsl(var(--background) / 0.7) 16rem,
+      hsl(var(--background) / 0.7)
+    );
+  }
+
   /* Loose copy carries its own soft ground. The sheet above the hero is
      see-through, so text that is not inside a card would otherwise sit
      directly on whatever is behind it. The bloom bleeds past the text box so

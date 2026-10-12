@@ -13,15 +13,15 @@ const REPEL_FORCE = 3;
 const REPEL_FALLOFF = 24;
 const MAX_VELOCITY = 10;
 const NOISE_AMPLITUDE = 0.9;
-const MAX_PARTICLES = 3000;
+const MAX_PARTICLES = 4200;
 const CANVAS_PADDING_RATIO = 0.25;
-const SAMPLE_STEPS = [3, 4, 5, 6, 8, 10];
+const SAMPLE_STEPS = [2, 3, 4, 5, 6, 8];
 const PARTICLE_ALPHA = 0.4;
 
 // Two depths instead of one flat field: a dim, slow, barely-reacting layer
 // behind and an accent-lit layer in front. The gap in spring, drift and
 // repulsion is what reads as parallax when the pointer moves through it.
-const NEAR_SHARE = 0.45;
+const NEAR_SHARE = 0.5;
 const FAR_RADIUS_SCALE = 0.7;
 const FAR_ALPHA_SCALE = 0.45;
 const FAR_REPEL_SCALE = 0.4;
@@ -182,7 +182,7 @@ const ParticlePattern = ({ active, className }: ParticlePatternProps) => {
 
       for (let i = 0; i < particleCount; i++) {
         const near = Math.random() < NEAR_SHARE;
-        const radius = 0.7 + Math.random() * 0.6;
+        const radius = 0.85 + Math.random() * 0.7;
 
         targetsX[i] = pointsX[i];
         targetsY[i] = pointsY[i];
